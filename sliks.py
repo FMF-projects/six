@@ -2,20 +2,43 @@ import tkinter
 import math
 
 class Gui():
-    STRANICA_SESTKOTNIKA = 25
-    VELIKOST_MATRIKE = 14
+    STRANICA_SESTKOTNIKA = 23
+    VELIKOST_MATRIKE = 13
 
     def __init__(self, master):
 
         # PLOSCA
-        self.plosca = tkinter.Canvas(master, width=3 ** (0.5) * (Gui.STRANICA_SESTKOTNIKA + 0.5) * Gui.VELIKOST_MATRIKE + 2, height=1.5 * Gui.STRANICA_SESTKOTNIKA * Gui.VELIKOST_MATRIKE + 0.5 * Gui.STRANICA_SESTKOTNIKA + 1)
+        self.plosca = tkinter.Canvas(master, width=3 ** (0.5) * (Gui.STRANICA_SESTKOTNIKA) * Gui.VELIKOST_MATRIKE + 1
+                                     , height=1.5 * Gui.STRANICA_SESTKOTNIKA * Gui.VELIKOST_MATRIKE + 0.5 * Gui.STRANICA_SESTKOTNIKA + 1)
+
         self.plosca.pack()
 
         self.igralno_polje = [[0 for i in range(Gui.VELIKOST_MATRIKE)] for j in range(Gui.VELIKOST_MATRIKE)]
 
+        self.plosca.bind("<Button-1>", self.plosca_klik)
+
+        # GLAVNI MENU
+        glavni_menu = tkinter.Menu(master)
+        master.config(menu=glavni_menu)
+
+        # PODMENUJI
+        igra_menu = tkinter.Menu(glavni_menu, tearoff=0)
+        glavni_menu.add_cascade(label="Igra", menu=igra_menu)
+
+        nastavitve_menu = tkinter.Menu(glavni_menu, tearoff=0)
+        glavni_menu.add_cascade(label="Nastavitve", menu=nastavitve_menu)
+
+        # IZBIRE V PODMENUJIH
+        igra_menu.add_command(label="Nova igra", command=self.nova_igra)
+
+
         self.narisi_mrezo()
-        print(self.igralno_polje)
-        
+        #print(self.igralno_polje)
+
+
+    def nova_igra(self):
+        self.plosca.delete('all')
+        self.narisi_mrezo()
 
     def narisi_sestkotnik(self, x, y):
         a = Gui.STRANICA_SESTKOTNIKA
@@ -30,8 +53,6 @@ class Gui():
         id = self.plosca.create_polygon(*t1, *t2, *t3, *t4, *t5, *t6, fill='', outline='black')
         return id
 
-
-
     def narisi_mrezo(self):
         a = Gui.STRANICA_SESTKOTNIKA
         v = 3 ** (0.5) * (0.5) * a
@@ -45,6 +66,21 @@ class Gui():
                 x = zacetni_x + (j - 1) * 2 * v
                 y = (i - 1) * 1.5 * a + 2
                 self.igralno_polje[i - 1][j - 1] = self.narisi_sestkotnik(x, y)
+
+    def plosca_klik(self, event):
+        m = event.x
+        n = event.y
+        self.povleci_potezo(m, n)
+
+    def povleci_potezo(self, m, n):
+        #zaenkrat samo barvanje ustreznega polja
+        #TODO
+        id_sestkotnika = self.plosca.find_closest(m, n)[0]
+        self.plosca.itemconfig(id_sestkotnika, fill='red')
+
+
+
+
 
 
 
