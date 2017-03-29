@@ -1,10 +1,12 @@
 import tkinter
 import math
 
+from igra import *
+
 class Gui():
     STRANICA_SESTKOTNIKA = 20
     VELIKOST_MATRIKE = 20
-    
+
     # visina trikotnikov v sestkotniku
     VISINA_TRIKOTNIKA = 3 ** (0.5) * (0.5) * STRANICA_SESTKOTNIKA
 
@@ -15,10 +17,9 @@ class Gui():
                                      , height=1.5 * Gui.STRANICA_SESTKOTNIKA * Gui.VELIKOST_MATRIKE + 0.5 * Gui.STRANICA_SESTKOTNIKA + 1)
         self.plosca.pack()
 
-        # SEZNAM ŠESTKOTNIKOV 
-        self.igralno_polje = [[0 for i in range(Gui.VELIKOST_MATRIKE)] for j in range(Gui.VELIKOST_MATRIKE)]
-
         self.plosca.bind("<Button-1>", self.plosca_klik)
+
+        self.igra = Igra()
 
         # GLAVNI MENU
         glavni_menu = tkinter.Menu(master)
@@ -63,14 +64,13 @@ class Gui():
                 for j in range(1, Gui.VELIKOST_MATRIKE + 1): #stolpec
                     x = zacetni_x + (j - 1) * 2 * v
                     y = (i - 1) * 1.5 * a + 2
-                    self.igralno_polje[i - 1][j - 1] = self.narisi_sestkotnik(x, y)
+                    self.igra.igralno_polje[i - 1][j - 1] = [self.narisi_sestkotnik(x, y), i, j]
             else:
                 zacetni_x = v + 2
                 for j in range(1, Gui.VELIKOST_MATRIKE): #stolpec
                     x = zacetni_x + (j - 1) * 2 * v
                     y = (i - 1) * 1.5 * a + 2
-                    self.igralno_polje[i - 1][j - 1] = self.narisi_sestkotnik(x, y)
-
+                    self.igra.igralno_polje[i - 1][j - 1] = [self.narisi_sestkotnik(x, y), i, j]
 
                 
     def nova_igra(self):
