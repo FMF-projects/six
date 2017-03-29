@@ -2,8 +2,8 @@ import tkinter
 import math
 
 class Gui():
-    STRANICA_SESTKOTNIKA = 23
-    VELIKOST_MATRIKE = 13
+    STRANICA_SESTKOTNIKA = 20
+    VELIKOST_MATRIKE = 20
     
     # visina trikotnikov v sestkotniku
     VISINA_TRIKOTNIKA = 3 ** (0.5) * (0.5) * STRANICA_SESTKOTNIKA
@@ -48,7 +48,7 @@ class Gui():
         t4 = (x + 2 * v, y + 1.5 * a)
         t5 = (x + v, y + 2 * a)
         t6 = (x, y + 1.5 * a)
-        id = self.plosca.create_polygon(*t1, *t2, *t3, *t4, *t5, *t6, fill='', outline='black')
+        id = self.plosca.create_polygon(*t1, *t2, *t3, *t4, *t5, *t6, fill='white', outline='black')
         return id
 
     def narisi_mrezo(self):
@@ -60,13 +60,18 @@ class Gui():
             #preverimo sodost/lihost in tako določimo zamik prvega šestkotnika
             if i % 2 == 1:
                 zacetni_x = 2
+                for j in range(1, Gui.VELIKOST_MATRIKE + 1): #stolpec
+                    x = zacetni_x + (j - 1) * 2 * v
+                    y = (i - 1) * 1.5 * a + 2
+                    self.igralno_polje[i - 1][j - 1] = self.narisi_sestkotnik(x, y)
             else:
                 zacetni_x = v + 2
+                for j in range(1, Gui.VELIKOST_MATRIKE): #stolpec
+                    x = zacetni_x + (j - 1) * 2 * v
+                    y = (i - 1) * 1.5 * a + 2
+                    self.igralno_polje[i - 1][j - 1] = self.narisi_sestkotnik(x, y)
 
-            for j in range(1, Gui.VELIKOST_MATRIKE + 1): #stolpec
-                x = zacetni_x + (j - 1) * 2 * v
-                y = (i - 1) * 1.5 * a + 2
-                self.igralno_polje[i - 1][j - 1] = self.narisi_sestkotnik(x, y)
+
                 
     def nova_igra(self):
         '''počisti ploščo in nariše novo mrežo'''
@@ -83,7 +88,7 @@ class Gui():
         #zaenkrat samo barvanje ustreznega polja
         #TODO
         id_sestkotnika = self.plosca.find_closest(m, n)[0]
-        self.plosca.itemconfig(id_sestkotnika, fill='red')
+        self.plosca.itemconfig(id_sestkotnika, fill='green')
 
     
 
