@@ -1,4 +1,5 @@
 def safe_list_get(matrika, i, j):
+  '''preveri, če je polje (i,j) v matriki (seznamu)'''
   try:
     return matrika[i][j]
   except IndexError:
@@ -6,14 +7,16 @@ def safe_list_get(matrika, i, j):
 
 class Igra():
     #TODO
-    STRANICA_SESTKOTNIKA = 20
-    VELIKOST_MATRIKE = 20
 
     def __init__(self):
+    
+        # VELIKOST IGRALNEGA POLJA
+        self.STRANICA_SESTKOTNIKA = 20
+        self.VELIKOST_MATRIKE = 20
 
         # SEZNAM ŠESTKOTNIKOV
-        self.igralno_polje = [[0 for i in range(Igra.VELIKOST_MATRIKE)] for j in range(Igra.VELIKOST_MATRIKE)]
-
+        self.igralno_polje = [[0 for i in range(self.VELIKOST_MATRIKE)] for j in range(self.VELIKOST_MATRIKE)]
+   
     def veljavne_poteze(self):
         '''vrne seznam veljavnih potez'''
         poteze = []
@@ -21,13 +24,19 @@ class Igra():
             for polje in vrstica:
                 id, i, j = polje[0], polje[1], polje[2]
                 if self.igralno_polje.itemcget(id, "fill") != '':
+                  #AttributeError: 'list' object has no attribute 'itemcget'
+                  #itemcget deluje na platnu hm hm....
+                  #najbrz bi bilo lazje barvo vkljuciti med podatke sestkotnika
                     continue
                 elif self.igralno_polje.itemcget(id, "fill") == '':
                     if stevilo_sosedov(i, j) == 0:
                         continue
                     else:
-                        poteze.append(polje)
-
+                        poteze.append(id)
+                        # shranimo samo id, saj se sicer preverjanje elementov v
+                        # povleci_potezo oteži
+                        # ali sploh potrebujeva i, j v veljavnih potezah?
+        return poteze
 
     def stevilo_sosedov(self, i, j):
         st_sosedov = 0
