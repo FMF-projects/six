@@ -18,8 +18,7 @@ class Igra():
         #print(self.igralno_polje)
    
     def veljavnost_poteze(self, id):
-        '''vrne seznam veljavnih potez'''
-        poteze = []
+        '''vrne True, če je poteza veljavna'''
         for vrstica in self.igralno_polje:
             for polje in vrstica:
               if polje[0] == id:
@@ -27,15 +26,13 @@ class Igra():
                 if barva != '':
                     continue
                 elif barva == '':
-                    if self.stevilo_sosedov(i, j) == 0:
-                        continue
-                    else:
-                        poteze.append(id)
-        return poteze
+                    if self.stevilo_sosedov(i, j) != 0:
+                        return True
+        
 
     def stevilo_sosedov(self, i, j):
         st_sosedov = 0
-        # koordinate sosedov se razlikujejo ce se nahajamo v sodi ali v lihi vrstici
+        # koordinate sosedov se razlikujejo v sodih in lihih vrsticah
         if i % 2 == 1: #lihe
           okolica = [(i-1, j-1), (i, j-1), (i+1, j-1), (i+1, j), (i, j+1), (i-1, j)]
         else: #sode

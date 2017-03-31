@@ -106,7 +106,7 @@ class Gui():
         #TODO
         id_sestkotnika = self.plosca.find_closest(m, n)[0]
         # preverimo veljavnost poteze
-        if id_sestkotnika in self.igra.veljavnost_poteze(id_sestkotnika):
+        if self.igra.veljavnost_poteze(id_sestkotnika) == True:
             self.plosca.itemconfig(id_sestkotnika, fill=barva)
             # zabeležimo spremembo barve
             for vrstica in self.igra.igralno_polje:
