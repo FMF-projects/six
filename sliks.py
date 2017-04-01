@@ -77,8 +77,14 @@ class Gui():
                     x = zacetni_x + (j - 1) * 2 * v
                     y = (i - 1) * 1.5 * a + 2
                     self.igra.igralno_polje[i - 1][j - 1] = [self.narisi_sestkotnik(x, y), i, j, '']
+
+        #shranimo to polje v zacetno_igralno_polje
+        self.igra.zacetno_igralno_polje = [vrstica[:] for vrstica in self.igra.igralno_polje]
+        # NEJ SE JEBE, TODO
+
+
         #pobarvamo prvo polje
-        sredina = self.igra.igralno_polje[VELIKOST_MATRIKE // 2 - 1][VELIKOST_MATRIKE // 2 - 1]
+        sredina = self.igra.igralno_polje[VELIKOST_MATRIKE // 2][VELIKOST_MATRIKE // 2] #zakaj bi moralo biti še -1? na 5x5 to ni bila sredina
         self.plosca.itemconfig(sredina[0], fill=barva)
         sredina[3]=barva
     
@@ -86,6 +92,12 @@ class Gui():
         '''počisti ploščo in nariše novo mrežo'''
         self.plosca.delete('all')
         self.narisi_mrezo()
+
+        self.igra.igralno_polje = self.igra.zacetno_igralno_polje
+        print(self.igra.igralno_polje)
+
+         #to je tudi treba, ja, sicer se rojevajo indeksiralne anomalije
+        #ne, nekaj narobe, bljah. ko se naredi self.narisi_mrezo(), id-ji niso od 1 naprej
         
     def velikost_igralnega_polja(self, matrika):
         '''spremeni velikost igralnega polja'''
@@ -109,11 +121,16 @@ class Gui():
         if self.igra.veljavnost_poteze(id_sestkotnika) == True:
             self.plosca.itemconfig(id_sestkotnika, fill=barva)
             # zabeležimo spremembo barve
-            for vrstica in self.igra.igralno_polje:
-                for polje in vrstica:
-                    if polje[0] == id_sestkotnika:
-                        polje[3] = barva
-            
+            #for vrstica in self.igra.igralno_polje:
+            #    for polje in vrstica:
+            #        if polje[0] == id_sestkotnika:
+            #            polje[3] = barva
+
+            vrstica = id_sestkotnika // VELIKOST_MATRIKE #v kateri se nahaja
+            stolpec = id_sestkotnika % VELIKOST_MATRIKE
+            self.igra.igralno_polje[vrstica][stolpec][3] = barva
+            print(self.igra.igralno_polje)
+            print(self.igra.zacetno_igralno_polje)
 
     
 

@@ -7,7 +7,7 @@ def safe_list_get(matrika, i, j):
 
 # VELIKOST IGRALNEGA POLJA
 STRANICA_SESTKOTNIKA = 20
-VELIKOST_MATRIKE = 20
+VELIKOST_MATRIKE = 5
     
 class Igra():
 
@@ -15,7 +15,10 @@ class Igra():
 
         # SEZNAM ŠESTKOTNIKOV
         self.igralno_polje = [[0 for i in range(VELIKOST_MATRIKE)] for j in range(VELIKOST_MATRIKE)]
-        #print(self.igralno_polje)
+        print(self.igralno_polje)
+
+        # ZACETNO IGRALNO POLJE (MORA BITI, SICER JE TEZKO ZACETI NOVO IGRO)
+        self.zacetno_igralno_polje = []
    
     def veljavnost_poteze(self, id):
         '''vrne True, če je poteza veljavna'''
