@@ -8,7 +8,7 @@ VISINA_TRIKOTNIKA = 3 ** (0.5) * (0.5) * logika_igre.STRANICA_SESTKOTNIKA
 STRANICA_SESTKOTNIKA = logika_igre.STRANICA_SESTKOTNIKA
 VELIKOST_MATRIKE = logika_igre.VELIKOST_MATRIKE
 
-barva = 'green'
+barva1 = 'green'
 
 class Gui():
 
@@ -18,7 +18,7 @@ class Gui():
         self.igra = logika_igre.Igra()
         
         # PLOSCA
-        self.plosca = tkinter.Canvas(master, width=VISINA_TRIKOTNIKA * 2 * VELIKOST_MATRIKE + 1
+        self.plosca = tkinter.Canvas(master, width=VISINA_TRIKOTNIKA * 2 * VELIKOST_MATRIKE + STRANICA_SESTKOTNIKA + 1
                                      , height=1.5 * STRANICA_SESTKOTNIKA * VELIKOST_MATRIKE + 0.5 * STRANICA_SESTKOTNIKA + 1)
         self.plosca.pack()
 
@@ -63,38 +63,39 @@ class Gui():
         '''nariše igralno polje sestavljeno iz šestkotnikov'''
         a = STRANICA_SESTKOTNIKA
         v = VISINA_TRIKOTNIKA
-        for i in range(1, VELIKOST_MATRIKE + 1): # vrstica
-            #preverimo sodost/lihost in tako določimo zamik prvega šestkotnika
-            if i % 2 == 1:
+        for i in range(VELIKOST_MATRIKE): # vrstica
+            # preverimo sodost/lihost in tako določimo zamik prvega šestkotnika
+            if i % 2 == 0: # sode vrstice
                 zacetni_x = 2
-                for j in range(1, VELIKOST_MATRIKE + 1): #stolpec
-                    x = zacetni_x + (j - 1) * 2 * v
-                    y = (i - 1) * 1.5 * a + 2
-                    self.igra.igralno_polje[i - 1][j - 1] = [self.narisi_sestkotnik(x, y), i, j, '']
-            else:
+                for j in range(VELIKOST_MATRIKE): # stolpec
+                    x = zacetni_x + j * 2 * v
+                    y = i * 1.5 * a + 2
+                    self.igra.igralno_polje[i][j] = [self.narisi_sestkotnik(x, y), i, j, '']
+            else: # lihe vrstice
                 zacetni_x = v + 2
-                for j in range(1, VELIKOST_MATRIKE + 1): #stolpec
-                    x = zacetni_x + (j - 1) * 2 * v
-                    y = (i - 1) * 1.5 * a + 2
-                    self.igra.igralno_polje[i - 1][j - 1] = [self.narisi_sestkotnik(x, y), i, j, '']
+                for j in range(VELIKOST_MATRIKE): # stolpec
+                    x = zacetni_x + j * 2 * v
+                    y = i * 1.5 * a + 2
+                    self.igra.igralno_polje[i][j] = [self.narisi_sestkotnik(x, y), i, j, '']
+
+        # pobarvamo prvo polje
+        sredina = self.igra.igralno_polje[VELIKOST_MATRIKE // 2][VELIKOST_MATRIKE // 2]
+        self.plosca.itemconfig(sredina[0], fill=barva1)
+        sredina[3]=barva1
 
         #shranimo to polje v zacetno_igralno_polje
-        self.igra.zacetno_igralno_polje = [vrstica[:] for vrstica in self.igra.igralno_polje]
-        # NEJ SE JEBE, TODO
-
-
-        #pobarvamo prvo polje
-        sredina = self.igra.igralno_polje[VELIKOST_MATRIKE // 2][VELIKOST_MATRIKE // 2] #zakaj bi moralo biti še -1? na 5x5 to ni bila sredina
-        self.plosca.itemconfig(sredina[0], fill=barva)
-        sredina[3]=barva
+        #self.igra.zacetno_igralno_polje = [vrstica[:] for vrstica in self.igra.igralno_polje]
+        #print (self.igra.igralno_polje)
+        #print(self.igra.zacetno_igralno_polje)
+        
     
     def nova_igra(self):
         '''počisti ploščo in nariše novo mrežo'''
         self.plosca.delete('all')
         self.narisi_mrezo()
 
-        self.igra.igralno_polje = self.igra.zacetno_igralno_polje
-        print(self.igra.igralno_polje)
+        #self.igra.igralno_polje = self.igra.zacetno_igralno_polje
+        #print(self.igra.igralno_polje)
 
          #to je tudi treba, ja, sicer se rojevajo indeksiralne anomalije
         #ne, nekaj narobe, bljah. ko se naredi self.narisi_mrezo(), id-ji niso od 1 naprej
@@ -119,18 +120,19 @@ class Gui():
         id_sestkotnika = self.plosca.find_closest(m, n)[0]
         # preverimo veljavnost poteze
         if self.igra.veljavnost_poteze(id_sestkotnika) == True:
-            self.plosca.itemconfig(id_sestkotnika, fill=barva)
+            self.plosca.itemconfig(id_sestkotnika, fill=barva1)
             # zabeležimo spremembo barve
-            #for vrstica in self.igra.igralno_polje:
-            #    for polje in vrstica:
-            #        if polje[0] == id_sestkotnika:
-            #            polje[3] = barva
+            for vrstica in self.igra.igralno_polje:
+                for polje in vrstica:
+                    if polje[0] == id_sestkotnika:
+                        polje[3] = barva1
 
-            vrstica = id_sestkotnika // VELIKOST_MATRIKE #v kateri se nahaja
-            stolpec = id_sestkotnika % VELIKOST_MATRIKE
-            self.igra.igralno_polje[vrstica][stolpec][3] = barva
-            print(self.igra.igralno_polje)
-            print(self.igra.zacetno_igralno_polje)
+        # objekte zacne stevilciti z 1
+        # vrstica = (id_sestkotnika - 1) // VELIKOST_MATRIKE
+        # stolpec = (id_sestkotnika - 1) % VELIKOST_MATRIKE
+        # self.plosca.itemconfig(id_sestkotnika, fill=barva1)
+        # self.igra.igralno_polje[vrstica][stolpec][3] = barva1
+        # problem nastane pri novi igri, saj so rezultati vecji od koordinat
 
     
 
