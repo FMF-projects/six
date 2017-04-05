@@ -8,7 +8,8 @@ VISINA_TRIKOTNIKA = 3 ** (0.5) * (0.5) * logika_igre.STRANICA_SESTKOTNIKA
 STRANICA_SESTKOTNIKA = logika_igre.STRANICA_SESTKOTNIKA
 VELIKOST_MATRIKE = logika_igre.VELIKOST_MATRIKE
 
-barva1 = 'green'
+BARVA1 = 'red'
+BARVA2 = 'black'
 
 class Gui():
 
@@ -80,8 +81,8 @@ class Gui():
 
         # pobarvamo prvo polje
         sredina = self.igra.igralno_polje[VELIKOST_MATRIKE // 2][VELIKOST_MATRIKE // 2]
-        self.plosca.itemconfig(sredina[0], fill=barva1)
-        sredina[3]=barva1
+        self.plosca.itemconfig(sredina[0], fill=BARVA2)
+        sredina[3]=BARVA2
 
         #shranimo to polje v zacetno_igralno_polje
         #self.igra.zacetno_igralno_polje = [vrstica[:] for vrstica in self.igra.igralno_polje]
@@ -115,23 +116,31 @@ class Gui():
         self.povleci_potezo(m, n)
 
     def povleci_potezo(self, m, n):
-        #zaenkrat samo barvanje ustreznega polja
-        #TODO
+        igralec = self.igra.na_potezi
+        if igralec == logika_igre.IGRALEC_1:
+            barva = BARVA1
+        else:
+            barva = BARVA2
+
         id_sestkotnika = self.plosca.find_closest(m, n)[0]
         # preverimo veljavnost poteze
         if self.igra.veljavnost_poteze(id_sestkotnika) == True:
-            self.plosca.itemconfig(id_sestkotnika, fill=barva1)
+
+            self.plosca.itemconfig(id_sestkotnika, fill=barva)
             # zabeležimo spremembo barve
             for vrstica in self.igra.igralno_polje:
                 for polje in vrstica:
                     if polje[0] == id_sestkotnika:
-                        polje[3] = barva1
+                        polje[3] = barva
+
+            self.igra.na_potezi = logika_igre.nasprotnik(igralec)
+            print(self.igra.na_potezi)
 
         # objekte zacne stevilciti z 1
         # vrstica = (id_sestkotnika - 1) // VELIKOST_MATRIKE
         # stolpec = (id_sestkotnika - 1) % VELIKOST_MATRIKE
-        # self.plosca.itemconfig(id_sestkotnika, fill=barva1)
-        # self.igra.igralno_polje[vrstica][stolpec][3] = barva1
+        # self.plosca.itemconfig(id_sestkotnika, fill=BARVA1)
+        # self.igra.igralno_polje[vrstica][stolpec][3] = BARVA1
         # problem nastane pri novi igri, saj so rezultati vecji od koordinat
 
     

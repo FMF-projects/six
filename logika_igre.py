@@ -5,6 +5,18 @@ def safe_list_get(matrika, i, j):
   except IndexError:
     return None
 
+IGRALEC_1 = '1'
+IGRALEC_2 = '2'
+
+def nasprotnik(igralec):
+    """Vrni nasprotnika od igralca."""
+    if igralec == IGRALEC_1:
+        return IGRALEC_2
+    elif igralec == IGRALEC_2:
+        return IGRALEC_1
+    else:
+        assert False, "neveljaven nasprotnik"
+
 # VELIKOST IGRALNEGA POLJA
 STRANICA_SESTKOTNIKA = 20
 VELIKOST_MATRIKE = 5
@@ -16,6 +28,9 @@ class Igra():
         # SEZNAM ŠESTKOTNIKOV
         self.igralno_polje = [[0 for i in range(VELIKOST_MATRIKE)] for j in range(VELIKOST_MATRIKE)]
         #print(self.igralno_polje)
+
+        self.na_potezi = IGRALEC_1
+
 
         # ZACETNO IGRALNO POLJE (MORA BITI, SICER JE TEZKO ZACETI NOVO IGRO)
         #self.zacetno_igralno_polje = []
