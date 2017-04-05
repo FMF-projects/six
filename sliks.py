@@ -8,8 +8,8 @@ VISINA_TRIKOTNIKA = 3 ** (0.5) * (0.5) * logika_igre.STRANICA_SESTKOTNIKA
 STRANICA_SESTKOTNIKA = logika_igre.STRANICA_SESTKOTNIKA
 VELIKOST_MATRIKE = logika_igre.VELIKOST_MATRIKE
 
-BARVA1 = 'red'
-BARVA2 = 'black'
+BARVA1 = logika_igre.BARVA1
+BARVA2 = logika_igre.BARVA2
 
 class Gui():
 
@@ -94,6 +94,7 @@ class Gui():
         '''počisti ploščo in nariše novo mrežo'''
         self.plosca.delete('all')
         self.narisi_mrezo()
+        self.igra.na_potezi = logika_igre.IGRALEC_1
 
         #self.igra.igralno_polje = self.igra.zacetno_igralno_polje
         #print(self.igra.igralno_polje)
@@ -133,8 +134,10 @@ class Gui():
                     if polje[0] == id_sestkotnika:
                         polje[3] = barva
 
+            if self.igra.je_morda_konec() == True:
+                print('konec')
+            #TODO, je morda konec?
             self.igra.na_potezi = logika_igre.nasprotnik(igralec)
-            print(self.igra.na_potezi)
 
         # objekte zacne stevilciti z 1
         # vrstica = (id_sestkotnika - 1) // VELIKOST_MATRIKE
