@@ -66,13 +66,13 @@ class Gui():
         v = VISINA_TRIKOTNIKA
         for i in range(VELIKOST_MATRIKE): # vrstica
             # preverimo sodost/lihost in tako določimo zamik prvega šestkotnika
-            if i % 2 == 0: # sode vrstice
+            if i % 2 == 0: # lihe vrstice (ker začnemo šteti z 0)
                 zacetni_x = 2
                 for j in range(VELIKOST_MATRIKE): # stolpec
                     x = zacetni_x + j * 2 * v
                     y = i * 1.5 * a + 2
                     self.igra.igralno_polje[i][j] = [self.narisi_sestkotnik(x, y), i, j, '']
-            else: # lihe vrstice
+            else: # sode vrstice
                 zacetni_x = v + 2
                 for j in range(VELIKOST_MATRIKE): # stolpec
                     x = zacetni_x + j * 2 * v
@@ -115,28 +115,33 @@ class Gui():
         m = event.x
         n = event.y
         self.povleci_potezo(m, n)
-
+     
     def povleci_potezo(self, m, n):
+        # pogledamo trenutnega igralca in izberemo ustrezno barvo
         igralec = self.igra.na_potezi
         if igralec == logika_igre.IGRALEC_1:
             barva = BARVA1
         else:
             barva = BARVA2
-
+        
+        # najdemo polje, ki je najblizje kliku miske
         id_sestkotnika = self.plosca.find_closest(m, n)[0]
-        # preverimo veljavnost poteze
+        
+        # preverimo veljavnost poteze in jo izvedemo
         if self.igra.veljavnost_poteze(id_sestkotnika) == True:
-
             self.plosca.itemconfig(id_sestkotnika, fill=barva)
+            
             # zabeležimo spremembo barve
             for vrstica in self.igra.igralno_polje:
                 for polje in vrstica:
                     if polje[0] == id_sestkotnika:
                         polje[3] = barva
 
-            if self.igra.je_morda_konec() == True:
+            # preverimo, ali je igre morda ze konec
+            if self.igra.je_morda_konec(barva) == True:
                 print('konec')
             #TODO, je morda konec?
+            # zamenjamo trenutnega igralca
             self.igra.na_potezi = logika_igre.nasprotnik(igralec)
 
         # objekte zacne stevilciti z 1
