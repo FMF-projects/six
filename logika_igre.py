@@ -96,7 +96,7 @@ class Igra():
 
         # padajoča črta
         PADAJOCA_CRTA_liha = [(i+1, j), (i+2, j+1), (i+3, j+1), (i+4, j+2), (i+5, j+2)]
-        PADAJOCA_CRTA_soda = [(i+1, j), (i+2, j-1), (i+3, j-1), (i+4, j-2), (i+5, j-2)]
+        PADAJOCA_CRTA_soda = [(i+1, j+1), (i+2, j+1), (i+3, j+2), (i+4, j+2), (i+5, j+3)]
 
         # trikotnik
         TRIKOTNIK_lih = [(i+1, j-1), (i+1, j), (i+2, j-1), (i+2, j), (i+2, j+1)]
@@ -137,6 +137,7 @@ class Igra():
                     
                 for vzorec in za_pregled:
                     stevilo_polj_iste_barve = 1
+                    # shranimo si id polj, ki tvorijo zmagovalni vzorec
                     zmagovalna_polja = [id]
                     for sosednje_polje in vzorec:
                         m, n = sosednje_polje
