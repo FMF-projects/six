@@ -8,6 +8,9 @@ IGRALEC_2 = '2'
 BARVA1 = 'red'
 BARVA2 = 'blue'
 
+# barva za zmagovalna polja
+BARVA3 = 'black'
+
 # VELIKOST IGRALNEGA POLJA
 STRANICA_SESTKOTNIKA = 20
 VELIKOST_MATRIKE = 15
@@ -77,21 +80,9 @@ class Igra():
                     st_sosedov += 1
         return st_sosedov
 
-    # def je_morda_konec(self):
-        # for vrstica in self.igralno_polje:
-            # for polje in vrstica:
-                # if self.rozica(polje[1], polje[2]):
-                    # return True
-                # if self.vodoravna_crta(polje[1], polje[2]):
-                    # return True
-                # if self.padajoca_crta(polje[1], polje[2]):
-                    # return True
-                # if self.narascajoca_crta(polje[1], polje[2]):
-                    # return True
                     
     def zmagovalni_vzorci(self, i, j):
         '''vrne nastavke zmagovalnih vzorcev glede na sodost/lihost vrstice'''
-        
         # rožica
         ROZICA_liha = [(i, j+1), (i+1, j+1), (i+2, j+1), (i+2, j), (i+1, j-1)]
         ROZICA_soda = [(i, j+1), (i+1, j+2), (i+2, j+1), (i+2, j), (i+1, j)]
@@ -127,7 +118,7 @@ class Igra():
         
         for vrstica in self.igralno_polje:
             for polje in vrstica:
-                i, j, barva_polja = polje[1], polje[2], polje[3]
+                id, i, j, barva_polja = polje
                 
                 # funkcijo poklicemo po vsaki potezi, torej lahko pogledamo le barvo
                 # igralca, ki je pravkar opravil potezo
@@ -146,98 +137,22 @@ class Igra():
                     
                 for vzorec in za_pregled:
                     stevilo_polj_iste_barve = 1
+                    zmagovalna_polja = [id]
                     for sosednje_polje in vzorec:
                         m, n = sosednje_polje
                         sosednje_polje_podatki = safe_list_get(self.igralno_polje, m, n)
                         if sosednje_polje_podatki != None:
                             if sosednje_polje_podatki[3] == barva:
                                 stevilo_polj_iste_barve += 1
+                                zmagovalna_polja.append(sosednje_polje_podatki[0])
                         else:
                             break
                                 
                     if stevilo_polj_iste_barve == 6:
-                        return True
-        
+                        return zmagovalna_polja
+        return False
             
-    
-    def rozica(self, i, j):
-        if i % 2 == 0: #lihe vrstice (zacnemo z 0)
-            za_pregled = [(i, j+1), (i+1, j+1), (i+2, j+1), (i+2, j), (i+1, j-1)]
-        else: #sode
-            za_pregled = [(i, j+1), (i+1, j+2), (i+2, j+1), (i+2, j), (i+1, j)]
-        stevilo_polj_iste_barve = 1
-        barva = BARVA1 if self.na_potezi == IGRALEC_1 else BARVA2
-        for polje in za_pregled:
-            m, n = polje
-            polje_podatki = safe_list_get(self.igralno_polje, m, n)
-            if polje_podatki != None:
-                if polje_podatki[3] == barva:
-                    stevilo_polj_iste_barve += 1
-            else:
-                break
-        if stevilo_polj_iste_barve == 6:
-            return True
-        else:
-            return False
-
-    def vodoravna_crta(self, i, j):
-        stevilo_polj_iste_barve = 1
-        barva = BARVA1 if self.na_potezi == IGRALEC_1 else BARVA2
-        za_pregled = [(i,j + k) for k in range(1,6)]
-        for polje in za_pregled:
-            m, n = polje
-            polje_podatki = safe_list_get(self.igralno_polje, m, n)
-            if polje_podatki != None:
-                if polje_podatki[3] == barva:
-                    stevilo_polj_iste_barve += 1
-            else:
-                break
-        if stevilo_polj_iste_barve == 6:
-            return True
-        else:
-            return False
-
-    def padajoca_crta(self, i, j):
-        if i % 2 == 0:  # lihe vrstice
-            za_pregled = [(i+1, j), (i + 2, j + 1), (i + 3, j + 1), (i + 4, j+2), (i + 5, j +2)]
-        else:  # sode
-            za_pregled = [(i+1, j + 1), (i + 2, j + 1), (i + 3, j + 2), (i + 4, j+2), (i + 5, j+3)]
-        stevilo_polj_iste_barve = 1
-        barva = BARVA1 if self.na_potezi == IGRALEC_1 else BARVA2
-        for polje in za_pregled:
-            m, n = polje
-            polje_podatki = safe_list_get(self.igralno_polje, m, n)
-            if polje_podatki != None:
-                if polje_podatki[3] == barva:
-                    stevilo_polj_iste_barve += 1
-            else:
-                break
-        if stevilo_polj_iste_barve == 6:
-            return True
-        else:
-            return False
-
-    def narascajoca_crta(self, i, j):
-        if i % 2 == 0:  # lihe vrstice
-            za_pregled = [(i + 1, j -1), (i + 2, j -1), (i + 3, j - 2), (i + 4, j - 2), (i + 5, j -3)]
-        else:  # sode
-            za_pregled = [(i + 1, j), (i + 2, j -1), (i + 3, j -1), (i + 4, j - 2), (i + 5, j -2)]
-        stevilo_polj_iste_barve = 1
-        barva = BARVA1 if self.na_potezi == IGRALEC_1 else BARVA2
-        for polje in za_pregled:
-            m, n = polje
-            polje_podatki = safe_list_get(self.igralno_polje, m, n)
-            if polje_podatki != None:
-                if polje_podatki[3] == barva:
-                    stevilo_polj_iste_barve += 1
-            else:
-                break
-        if stevilo_polj_iste_barve == 6:
-            return True
-        else:
-            return False
-            
-            
+  
 #######################################################
 #                  OSTALE FUNKCIJE                    # 
 #######################################################

@@ -10,6 +10,7 @@ VELIKOST_MATRIKE = logika_igre.VELIKOST_MATRIKE
 
 BARVA1 = logika_igre.BARVA1
 BARVA2 = logika_igre.BARVA2
+BARVA3 = logika_igre.BARVA3
 
 class Gui():
 
@@ -89,6 +90,12 @@ class Gui():
         #print (self.igra.igralno_polje)
         #print(self.igra.zacetno_igralno_polje)
         
+    def narisi_zmagovalni_vzorec(self, zmagovalna_polja):
+        '''poudari zmagovalni vzorec'''
+        for id in zmagovalna_polja:
+            self.plosca.itemconfig(id, fill=BARVA3)
+        
+        
     
     def nova_igra(self):
         '''počisti ploščo in nariše novo mrežo'''
@@ -138,9 +145,10 @@ class Gui():
                         polje[3] = barva
 
             # preverimo, ali je igre morda ze konec
-            if self.igra.je_morda_konec(barva) == True:
-                print('konec')
-            #TODO, je morda konec?
+            konec_igre = self.igra.je_morda_konec(barva)
+            if konec_igre != False:
+                self.narisi_zmagovalni_vzorec(konec_igre)
+                
             # zamenjamo trenutnega igralca
             self.igra.na_potezi = logika_igre.nasprotnik(igralec)
 
