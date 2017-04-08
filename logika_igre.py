@@ -33,9 +33,6 @@ class Igra():
         self.na_potezi = IGRALEC_2
         
         self.zgodovina = []
-
-        # ZACETNO IGRALNO POLJE (MORA BITI, SICER JE TEZKO ZACETI NOVO IGRO)
-        #self.zacetno_igralno_polje = []
  
     
     def veljavnost_poteze(self, id):

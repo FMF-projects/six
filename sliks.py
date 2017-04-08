@@ -85,11 +85,7 @@ class Gui():
         sredina = self.igra.igralno_polje[VELIKOST_MATRIKE // 2][VELIKOST_MATRIKE // 2]
         self.plosca.itemconfig(sredina[0], fill=BARVA1)
         sredina[3]=BARVA1
-
-        #shranimo to polje v zacetno_igralno_polje
-        #self.igra.zacetno_igralno_polje = [vrstica[:] for vrstica in self.igra.igralno_polje]
-        #print (self.igra.igralno_polje)
-        #print(self.igra.zacetno_igralno_polje)
+        
         
     def narisi_zmagovalni_vzorec(self, zmagovalna_polja):
         '''poudari zmagovalni vzorec'''
