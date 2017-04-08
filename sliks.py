@@ -155,7 +155,6 @@ class Gui():
                 self.igra.na_potezi = logika_igre.nasprotnik(igralec)
 
     
-    
 if __name__ == "__main__":
     root = tkinter.Tk()
     root.title("SIX")
