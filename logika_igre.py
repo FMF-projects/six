@@ -13,7 +13,7 @@ BARVA3 = 'black'
 
 # VELIKOST IGRALNEGA POLJA
 STRANICA_SESTKOTNIKA = 20
-VELIKOST_MATRIKE = 15
+VELIKOST_MATRIKE = 7
 
         
 #######################################################
@@ -28,8 +28,9 @@ class Igra():
         self.igralno_polje = [[0 for i in range(VELIKOST_MATRIKE)] for j in range(VELIKOST_MATRIKE)]
         #print(self.igralno_polje)
 
-        self.na_potezi = IGRALEC_1
-
+        self.na_potezi = IGRALEC_2
+        
+        self.zgodovina = []
 
         # ZACETNO IGRALNO POLJE (MORA BITI, SICER JE TEZKO ZACETI NOVO IGRO)
         #self.zacetno_igralno_polje = []
@@ -46,18 +47,6 @@ class Igra():
                 elif barva == '':
                     if self.stevilo_sosedov(i, j) != 0:
                       return True
-
-        # objekte zacne stevilciti z 1
-        # vrstica = (id_sestkotnika - 1) // VELIKOST_MATRIKE
-        # stolpec = (id_sestkotnika - 1) % VELIKOST_MATRIKE
-        # polje = self.igralno_polje[vrstica][stolpec]
-        # print(polje)
-        # i, j, barva = polje[1], polje[2], polje[3]
-        # if barva != '':
-         # return False
-        # elif barva == '':
-         # if self.stevilo_sosedov(i, j) != 0:
-           # return True
         
 
     def stevilo_sosedov(self, i, j):
@@ -129,11 +118,8 @@ class Igra():
                 if barva_polja == '':
                     continue
                 
-                # vzorci, ki jih moramo pregledati, glede na vrstico izbranega polja
-                if i % 2 == 0: # liha
-                    za_pregled = self.zmagovalni_vzorci(i, j)
-                else: # soda
-                    za_pregled = self.zmagovalni_vzorci(i, j)
+                # vzorci, ki jih moramo pregledati
+                za_pregled = self.zmagovalni_vzorci(i, j)
                     
                 for vzorec in za_pregled:
                     stevilo_polj_iste_barve = 1
@@ -153,7 +139,13 @@ class Igra():
                         return zmagovalna_polja
         return False
             
-  
+    def razveljavi(self):
+        self.igralno_polje, self.na_potezi = self.zgodovina.pop()
+        
+        
+    
+    
+    
 #######################################################
 #                  OSTALE FUNKCIJE                    # 
 #######################################################

@@ -1,5 +1,6 @@
 import tkinter
 import math
+import copy
 
 import logika_igre
 
@@ -82,8 +83,8 @@ class Gui():
 
         # pobarvamo prvo polje
         sredina = self.igra.igralno_polje[VELIKOST_MATRIKE // 2][VELIKOST_MATRIKE // 2]
-        self.plosca.itemconfig(sredina[0], fill=BARVA2)
-        sredina[3]=BARVA2
+        self.plosca.itemconfig(sredina[0], fill=BARVA1)
+        sredina[3]=BARVA1
 
         #shranimo to polje v zacetno_igralno_polje
         #self.igra.zacetno_igralno_polje = [vrstica[:] for vrstica in self.igra.igralno_polje]
@@ -93,21 +94,15 @@ class Gui():
     def narisi_zmagovalni_vzorec(self, zmagovalna_polja):
         '''poudari zmagovalni vzorec'''
         for id in zmagovalna_polja:
-            self.plosca.itemconfig(id, fill=BARVA3)
+            self.plosca.itemconfig(id, width=3)
         
         
-    
     def nova_igra(self):
         '''počisti ploščo in nariše novo mrežo'''
+        self.igra.zgodovina = []
         self.plosca.delete('all')
         self.narisi_mrezo()
         self.igra.na_potezi = logika_igre.IGRALEC_1
-
-        #self.igra.igralno_polje = self.igra.zacetno_igralno_polje
-        #print(self.igra.igralno_polje)
-
-         #to je tudi treba, ja, sicer se rojevajo indeksiralne anomalije
-        #ne, nekaj narobe, bljah. ko se naredi self.narisi_mrezo(), id-ji niso od 1 naprej
         
     def velikost_igralnega_polja(self, matrika):
         '''spremeni velikost igralnega polja'''
@@ -126,6 +121,10 @@ class Gui():
     def povleci_potezo(self, m, n):
         # pogledamo trenutnega igralca in izberemo ustrezno barvo
         igralec = self.igra.na_potezi
+
+        if igralec == None:
+            return None
+            
         if igralec == logika_igre.IGRALEC_1:
             barva = BARVA1
         else:
@@ -136,6 +135,12 @@ class Gui():
         
         # preverimo veljavnost poteze in jo izvedemo
         if self.igra.veljavnost_poteze(id_sestkotnika) == True:
+        
+            # shranimo igralno polje preden izvedemo potezo
+            kopija = copy.deepcopy(self.igra.igralno_polje)
+            self.igra.zgodovina.append((kopija, igralec))
+            #print(self.igra.zgodovina, '================================')
+            
             self.plosca.itemconfig(id_sestkotnika, fill=barva)
             
             # zabeležimo spremembo barve
@@ -148,16 +153,10 @@ class Gui():
             konec_igre = self.igra.je_morda_konec(barva)
             if konec_igre != False:
                 self.narisi_zmagovalni_vzorec(konec_igre)
-                
-            # zamenjamo trenutnega igralca
-            self.igra.na_potezi = logika_igre.nasprotnik(igralec)
-
-        # objekte zacne stevilciti z 1
-        # vrstica = (id_sestkotnika - 1) // VELIKOST_MATRIKE
-        # stolpec = (id_sestkotnika - 1) % VELIKOST_MATRIKE
-        # self.plosca.itemconfig(id_sestkotnika, fill=BARVA1)
-        # self.igra.igralno_polje[vrstica][stolpec][3] = BARVA1
-        # problem nastane pri novi igri, saj so rezultati vecji od koordinat
+                self.igra.na_potezi = None
+            else:
+                # zamenjamo trenutnega igralca
+                self.igra.na_potezi = logika_igre.nasprotnik(igralec)
 
     
 
@@ -167,5 +166,5 @@ if __name__ == "__main__":
     root.title("SIX")
 
     aplikacija = Gui(root)
-
+    root.iconbitmap(r'..\six\ikona\matica.ico')
     root.mainloop()
