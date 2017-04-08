@@ -1,3 +1,5 @@
+import copy
+
 #######################################################
 #                      PARAMETRI                      #
 #######################################################
@@ -125,9 +127,11 @@ class Igra():
                     stevilo_polj_iste_barve = 1
                     # shranimo si id polj, ki tvorijo zmagovalni vzorec
                     zmagovalna_polja = [id]
+                    
                     for sosednje_polje in vzorec:
                         m, n = sosednje_polje
                         sosednje_polje_podatki = safe_list_get(self.igralno_polje, m, n)
+                        
                         if sosednje_polje_podatki != None:
                             if sosednje_polje_podatki[3] == barva:
                                 stevilo_polj_iste_barve += 1
@@ -142,9 +146,15 @@ class Igra():
     def razveljavi(self):
         self.igralno_polje, self.na_potezi = self.zgodovina.pop()
         
-        
+    def kopija(self):
+        '''vrne kopijo igre'''
+        k = Igra()
+        k.plosca = copy.deepcopy(self.igra.igralno_polje)
+        k.na_potezi = self.na_potezi
+        return k
+
     
-    
+ 
     
 #######################################################
 #                  OSTALE FUNKCIJE                    # 
