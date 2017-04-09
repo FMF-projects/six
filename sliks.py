@@ -1,8 +1,12 @@
 import tkinter
 import math
 import copy
+import logging
 
 import logika_igre
+import clovek
+import racunalnik
+import minimax
 
 # visina trikotnikov v sestkotniku
 VISINA_TRIKOTNIKA = 3 ** (0.5) * (0.5) * logika_igre.STRANICA_SESTKOTNIKA
@@ -18,7 +22,10 @@ class Gui():
     def __init__(self, master):
     
         # ZAČNEMO NOVO IGRO
-        self.igra = logika_igre.Igra()
+        self.igra = None
+        self.igralec_1 = None # Objekt, ki igra BARVA1 (nastavimo ob začetku igre)
+        self.igralec_2 = None # Objekt, ki igra BARVA2 (nastavimo ob začetku igre)
+
         
         # PLOSCA
         self.plosca = tkinter.Canvas(master, width=VISINA_TRIKOTNIKA * 2 * VELIKOST_MATRIKE + STRANICA_SESTKOTNIKA + 1
@@ -46,8 +53,58 @@ class Gui():
         velikost_menu.add_command(label="20x20", command=self.velikost_igralnega_polja(20))
 
         # UKAZI OB ZAGONU
-        self.narisi_mrezo()
+        #self.narisi_mrezo()
         #print(self.igra.igralno_polje)
+
+
+###########################################################################
+#               NEVARNO OBMOCJE                                           #
+###########################################################################
+
+        # Prični igro v načinu človek proti računalniku
+        self.zacni_igro(clovek.Clovek(self), racunalnik.Racunalnik(self, minimax.Minimax(minimax.globina)))
+
+
+    def zacni_igro(self, igralec_1, igralec_2):
+        """Nastavi stanje igre na zacetek igre.
+           Za igralca uporabi dana igralca."""
+        # Ustavimo vsa vlakna, ki trenutno razmišljajo
+        self.prekini_igralce()
+        self.nova_igra()
+        # Shranimo igralce
+        self.igralec_1 = igralec_1
+        self.igralec_2 = igralec_2
+        # Križec je prvi na potezi
+        #self.napis.set("Na potezi je X.")
+        self.igralec_2.igraj()
+
+    # def koncaj_igro(self, zmagovalec, trojka):
+    #     """Nastavi stanje igre na konec igre."""
+    #     if zmagovalec == IGRALEC_X:
+    #         self.napis.set("Zmagal je X.")
+    #         self.narisi_zmagovalno_trojico(zmagovalec, trojka)
+    #     elif zmagovalec == IGRALEC_O:
+    #         self.napis.set("Zmagal je O.")
+    #         self.narisi_zmagovalno_trojico(zmagovalec, trojka)
+    #     else:
+    #         self.napis.set("Neodločeno.")
+
+    def prekini_igralce(self):
+        """Sporoči igralcem, da morajo nehati razmišljati."""
+        logging.debug ("prekinjam igralce")
+        if self.igralec_1: self.igralec_1.racunalnik.prekini()
+        if self.igralec_2: self.igralec_2.racunalnik.prekini()
+
+
+###########################################################################
+
+    def nova_igra(self):
+        '''počisti ploščo in nariše novo mrežo'''
+        self.igra = logika_igre.Igra()
+        self.igra.zgodovina = []
+        self.plosca.delete('all')
+        self.narisi_mrezo()
+        self.igra.na_potezi = logika_igre.IGRALEC_2
 
 
     def narisi_sestkotnik(self, x, y):
@@ -91,14 +148,6 @@ class Gui():
         '''poudari zmagovalni vzorec'''
         for id in zmagovalna_polja:
             self.plosca.itemconfig(id, width=3)
-        
-        
-    def nova_igra(self):
-        '''počisti ploščo in nariše novo mrežo'''
-        self.igra.zgodovina = []
-        self.plosca.delete('all')
-        self.narisi_mrezo()
-        self.igra.na_potezi = logika_igre.IGRALEC_1
         
     def velikost_igralnega_polja(self, matrika):
         '''spremeni velikost igralnega polja'''
@@ -147,8 +196,8 @@ class Gui():
 
             # preverimo, ali je igre morda ze konec
             konec_igre = self.igra.je_morda_konec(barva)
-            if konec_igre != False:
-                self.narisi_zmagovalni_vzorec(konec_igre)
+            if konec_igre != logika_igre.NI_KONEC and konec_igre != logika_igre.NEODLOCENO:
+                self.narisi_zmagovalni_vzorec(konec_igre[0])
                 self.igra.na_potezi = None
             else:
                 # zamenjamo trenutnega igralca

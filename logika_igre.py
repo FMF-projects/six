@@ -10,6 +10,9 @@ IGRALEC_2 = '2'
 BARVA1 = 'red'
 BARVA2 = 'blue'
 
+NEODLOCENO = "neodločeno"
+NI_KONEC = "ni konec"
+
 # barva za zmagovalna polja
 BARVA3 = 'black'
 
@@ -103,6 +106,9 @@ class Igra():
         
 
     def je_morda_konec(self, barva):
+        '''Vrne [zmagovalna_polja, zmagovalec], ce je nekdo zmagal, NEODLOCENO, ce je plosca polna
+        in ni zmagovalca, sicer vrne NI_KONEC.'''
+        je_polno = True #gledamo, ce je celotno polje polno, ce ni, bomo True spremenili v False
         
         for vrstica in self.igralno_polje:
             for polje in vrstica:
@@ -115,6 +121,7 @@ class Igra():
                 
                 # prav tako ne bomo preverjali vzorcev za prazna polja
                 if barva_polja == '':
+                    je_polno = False
                     continue
                 
                 # vzorci, ki jih moramo pregledati
@@ -137,8 +144,15 @@ class Igra():
                             break
                                 
                     if stevilo_polj_iste_barve == 6:
-                        return zmagovalna_polja
-        return False
+                        if barva_polja == BARVA1:
+                            zmagovalec = IGRALEC_1
+                        else:
+                            zmagovalec = IGRALEC_2
+                        return [zmagovalna_polja, zmagovalec]
+        if je_polno == True:
+            return NEODLOCENO
+        else:
+            return NI_KONEC
             
     def razveljavi(self):
         self.igralno_polje, self.na_potezi = self.zgodovina.pop()
@@ -150,6 +164,10 @@ class Igra():
         k.na_potezi = self.na_potezi
         return k
 
+    def stanje_igre(self):
+        #TODO
+        pass
+
     
     
 #######################################################
@@ -157,11 +175,11 @@ class Igra():
 #######################################################
 
 def safe_list_get(matrika, i, j):
-  '''preveri, če je polje (i,j) v matriki (seznamu)'''
-  try:
-    return matrika[i][j]
-  except IndexError:
-    return None
+    '''preveri, če je polje (i,j) v matriki (seznamu)'''
+    try:
+        return matrika[i][j]
+    except IndexError:
+        return None
 
 def nasprotnik(igralec):
     """Vrne nasprotnika od igralca."""
