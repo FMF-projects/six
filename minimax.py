@@ -1,4 +1,5 @@
 import logika_igre
+
 import logging
 
 globina = 4
@@ -57,14 +58,15 @@ class Minimax():
             for polje in vrstica:
                 x1, x2 = 0, 0
                 i, j, barva = polje[1], polje[2], polje[3]
-                if barva == BARVA1:
+                if barva == logika_igre.BARVA1:
                     for vzorec in self.igra.zmagovalni_vzorci(i, j):
-                        x1 += stevilo_polj_v_vzorcu(vzorec, barva)
-                elif barva == BARVA2:
+                        x1 += self.stevilo_polj_v_vzorcu(vzorec, barva)
+                elif barva == logika_igre.BARVA2:
                     for vzorec in self.igra.zmagovalni_vzorci(i, j):
-                        x2 += stevilo_polj_v_vzorcu(vzorec, barva)
+                        x2 += self.stevilo_polj_v_vzorcu(vzorec, barva)
                 if (x1, x2) in vrednosti:
                     vr_pozicije += vrednosti[(x1,x2)]
+        return vr_pozicije
     
     def izracunaj_potezo(self, igra):
         self.igra = igra
@@ -87,15 +89,15 @@ class Minimax():
             logging.debug ("Minimax prekinja, globina = {0}".format(globina))
             return (None, 0)
         (zmagovalec, lst) = self.igra.stanje_igre()
-        if zmagovalec in (IGRALEC_1, IGRALEC_2, NEODLOCENO):
+        if zmagovalec in (logika_igre.IGRALEC_1, logika_igre.IGRALEC_2, logika_igre.NEODLOCENO):
             # Igre je konec, vrnemo njeno vrednost
             if zmagovalec == self.jaz:
                 return (None, Minimax.ZMAGA)
-            elif zmagovalec == nasprotnik(self.jaz):
+            elif zmagovalec == logika_igre.nasprotnik(self.jaz):
                 return (None, -Minimax.ZMAGA)
             else:
                 return (None, 0)
-        elif zmagovalec == NI_KONEC:
+        elif zmagovalec == logika_igre.NI_KONEC:
             # Igre ni konec
             if globina == 0:
                 return (None, self.vrednost_pozicije())

@@ -101,7 +101,6 @@ class Gui():
     def nova_igra(self):
         '''počisti ploščo in nariše novo mrežo'''
         self.igra = logika_igre.Igra()
-        self.igra.zgodovina = []
         self.plosca.delete('all')
         self.narisi_mrezo()
         self.igra.na_potezi = logika_igre.IGRALEC_2

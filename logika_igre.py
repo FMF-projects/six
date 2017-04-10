@@ -18,7 +18,7 @@ BARVA3 = 'black'
 
 # VELIKOST IGRALNEGA POLJA
 STRANICA_SESTKOTNIKA = 20
-VELIKOST_MATRIKE = 7
+VELIKOST_MATRIKE = 3
 
         
 #######################################################
@@ -109,9 +109,10 @@ class Igra():
         '''Vrne [zmagovalna_polja, zmagovalec], ce je nekdo zmagal, NEODLOCENO, ce je plosca polna
         in ni zmagovalca, sicer vrne NI_KONEC.'''
         je_polno = True #gledamo, ce je celotno polje polno, ce ni, bomo True spremenili v False
-        
+        print(self.igralno_polje)
         for vrstica in self.igralno_polje:
             for polje in vrstica:
+                print(polje)
                 id, i, j, barva_polja = polje
                 
                 # funkcijo poklicemo po vsaki potezi, torej lahko pogledamo le barvo
@@ -160,19 +161,31 @@ class Igra():
     def kopija(self):
         '''vrne kopijo igre'''
         k = Igra()
-        k.plosca = copy.deepcopy(self.igra.igralno_polje)
+        k.igralno_polje = copy.deepcopy(self.igralno_polje)
         k.na_potezi = self.na_potezi
         return k
 
     def stanje_igre(self):
-        #TODO
-        pass
+        barva = barva_na_potezi(self.na_potezi)
+        stanje = self.je_morda_konec(barva)
+        if type(stanje) == list:
+            return (stanje[0], stanje[1])
+        elif stanje == NEODLOCENO:
+            return (NEODLOCENO, None)
+        elif stanje == NI_KONEC:
+            return (NI_KONEC, None)
 
     
     
 #######################################################
 #                  OSTALE FUNKCIJE                    # 
 #######################################################
+
+def barva_na_potezi(igralec):
+    if igralec == IGRALEC_1:
+        return BARVA1
+    elif igralec == IGRALEC_2:
+        return BARVA2
 
 def safe_list_get(matrika, i, j):
     '''preveri, če je polje (i,j) v matriki (seznamu)'''
