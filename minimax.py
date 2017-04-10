@@ -4,6 +4,14 @@ import logging
 
 globina = 4
 
+IGRALEC_1 = logika_igre.IGRALEC_1
+IGRALEC_2 = logika_igre.IGRALEC_2
+NEODLOCENO = logika_igre.NEODLOCENO
+NI_KONEC = logika_igre.NI_KONEC
+
+BARVA1 = logika_igre.BARVA1
+BARVA2 = logika_igre.BARVA2
+
 class Minimax():
 
     def __init__(self, globina):
@@ -58,10 +66,10 @@ class Minimax():
             for polje in vrstica:
                 x1, x2 = 0, 0
                 i, j, barva = polje[1], polje[2], polje[3]
-                if barva == logika_igre.BARVA1:
+                if barva == BARVA1:
                     for vzorec in self.igra.zmagovalni_vzorci(i, j):
                         x1 += self.stevilo_polj_v_vzorcu(vzorec, barva)
-                elif barva == logika_igre.BARVA2:
+                elif barva == BARVA2:
                     for vzorec in self.igra.zmagovalni_vzorci(i, j):
                         x2 += self.stevilo_polj_v_vzorcu(vzorec, barva)
                 if (x1, x2) in vrednosti:
@@ -89,7 +97,7 @@ class Minimax():
             logging.debug ("Minimax prekinja, globina = {0}".format(globina))
             return (None, 0)
         (zmagovalec, lst) = self.igra.stanje_igre()
-        if zmagovalec in (logika_igre.IGRALEC_1, logika_igre.IGRALEC_2, logika_igre.NEODLOCENO):
+        if zmagovalec in (IGRALEC_1, IGRALEC_2, NEODLOCENO):
             # Igre je konec, vrnemo njeno vrednost
             if zmagovalec == self.jaz:
                 return (None, Minimax.ZMAGA)
@@ -97,7 +105,7 @@ class Minimax():
                 return (None, -Minimax.ZMAGA)
             else:
                 return (None, 0)
-        elif zmagovalec == logika_igre.NI_KONEC:
+        elif zmagovalec == NI_KONEC:
             # Igre ni konec
             if globina == 0:
                 return (None, self.vrednost_pozicije())
@@ -107,7 +115,7 @@ class Minimax():
                     # Maksimiziramo
                     najboljsa_poteza = None
                     vrednost_najboljse = -Minimax.NESKONCNO
-                    for p in self.igra.veljavne_poteze():
+                    for p in self.igra.veljavne_poteze(): # ta funkcija ne obstaja, imava le funkcijo veljavnost poteze
                         self.igra.povleci_potezo(p)
                         vrednost = self.minimax(globina-1, not maksimiziramo)[1]
                         self.igra.razveljavi()

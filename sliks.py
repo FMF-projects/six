@@ -15,7 +15,7 @@ VELIKOST_MATRIKE = logika_igre.VELIKOST_MATRIKE
 
 BARVA1 = logika_igre.BARVA1
 BARVA2 = logika_igre.BARVA2
-BARVA3 = logika_igre.BARVA3
+PRAZNO = logika_igre.PRAZNO
 
 class Gui():
 
@@ -53,7 +53,7 @@ class Gui():
         velikost_menu.add_command(label="20x20", command=self.velikost_igralnega_polja(20))
 
         # UKAZI OB ZAGONU
-        #self.narisi_mrezo()
+        #self.napolni_igralno_polje()
         #print(self.igra.igralno_polje)
 
 
@@ -102,9 +102,8 @@ class Gui():
         '''počisti ploščo in nariše novo mrežo'''
         self.igra = logika_igre.Igra()
         self.plosca.delete('all')
-        self.narisi_mrezo()
+        self.napolni_igralno_polje()
         self.igra.na_potezi = logika_igre.IGRALEC_2
-
 
     def narisi_sestkotnik(self, x, y):
         a = STRANICA_SESTKOTNIKA
@@ -115,10 +114,10 @@ class Gui():
         t4 = (x + 2 * v, y + 1.5 * a)
         t5 = (x + v, y + 2 * a)
         t6 = (x, y + 1.5 * a)
-        id = self.plosca.create_polygon(*t1, *t2, *t3, *t4, *t5, *t6, fill='', outline='black')
+        id = self.plosca.create_polygon(*t1, *t2, *t3, *t4, *t5, *t6, fill=PRAZNO, outline='black')
         return id
 
-    def narisi_mrezo(self):
+    def napolni_igralno_polje(self):
         '''nariše igralno polje sestavljeno iz šestkotnikov'''
         a = STRANICA_SESTKOTNIKA
         v = VISINA_TRIKOTNIKA
@@ -129,20 +128,19 @@ class Gui():
                 for j in range(VELIKOST_MATRIKE): # stolpec
                     x = zacetni_x + j * 2 * v
                     y = i * 1.5 * a + 2
-                    self.igra.igralno_polje[i][j] = [self.narisi_sestkotnik(x, y), i, j, '']
+                    self.igra.igralno_polje[i][j] = [self.narisi_sestkotnik(x, y), i, j, PRAZNO]
             else: # sode vrstice
                 zacetni_x = v + 2
                 for j in range(VELIKOST_MATRIKE): # stolpec
                     x = zacetni_x + j * 2 * v
                     y = i * 1.5 * a + 2
-                    self.igra.igralno_polje[i][j] = [self.narisi_sestkotnik(x, y), i, j, '']
+                    self.igra.igralno_polje[i][j] = [self.narisi_sestkotnik(x, y), i, j, PRAZNO]
 
         # pobarvamo prvo polje
         sredina = self.igra.igralno_polje[VELIKOST_MATRIKE // 2][VELIKOST_MATRIKE // 2]
         self.plosca.itemconfig(sredina[0], fill=BARVA1)
         sredina[3]=BARVA1
-        
-        
+             
     def narisi_zmagovalni_vzorec(self, zmagovalna_polja):
         '''poudari zmagovalni vzorec'''
         for id in zmagovalna_polja:
@@ -175,22 +173,22 @@ class Gui():
             barva = BARVA2
         
         # najdemo polje, ki je najblizje kliku miske
-        id_sestkotnika = self.plosca.find_closest(m, n)[0]
+        id = self.plosca.find_closest(m, n)[0]
         
         # preverimo veljavnost poteze in jo izvedemo
-        if self.igra.veljavnost_poteze(id_sestkotnika) == True:
+        if self.igra.veljavnost_poteze(id) == True:
         
             # shranimo igralno polje preden izvedemo potezo
             kopija = copy.deepcopy(self.igra.igralno_polje)
             self.igra.zgodovina.append((kopija, igralec))
-            #print(self.igra.zgodovina, '================================')
             
-            self.plosca.itemconfig(id_sestkotnika, fill=barva)
+            # spremenimo barvo polja
+            self.plosca.itemconfig(id, fill=barva)
             
             # zabeležimo spremembo barve
             for vrstica in self.igra.igralno_polje:
                 for polje in vrstica:
-                    if polje[0] == id_sestkotnika:
+                    if polje[0] == id:
                         polje[3] = barva
 
             # preverimo, ali je igre morda ze konec

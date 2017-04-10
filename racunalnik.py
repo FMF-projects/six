@@ -22,7 +22,7 @@ class Racunalnik():
         self.mislec.start()
 
         # Gremo preverjat, ali je bila najdena poteza:
-        self.gui.plosca.after(100, self.preveri_potezo)
+        self.gui.plosca.after(100, self.preveri_potezo) # najbrz je treba v najinem primeru preveriti na igralnem polju?
 
     def preveri_potezo(self):
         """Vsakih 100ms preveri, ali je algoritem že izračunal potezo."""

@@ -9,12 +9,10 @@ IGRALEC_2 = '2'
 
 BARVA1 = 'red'
 BARVA2 = 'blue'
+PRAZNO = ''
 
 NEODLOCENO = "neodločeno"
 NI_KONEC = "ni konec"
-
-# barva za zmagovalna polja
-BARVA3 = 'black'
 
 # VELIKOST IGRALNEGA POLJA
 STRANICA_SESTKOTNIKA = 20
@@ -44,9 +42,9 @@ class Igra():
             for polje in vrstica:
               if polje[0] == id:
                 i, j, barva = polje[1], polje[2], polje[3]
-                if barva != '':
+                if barva != PRAZNO:
                     continue
-                elif barva == '':
+                elif barva == PRAZNO:
                     if self.stevilo_sosedov(i, j) != 0:
                       return True
         
@@ -67,7 +65,7 @@ class Igra():
               continue
             sosed_podatki = safe_list_get(self.igralno_polje, x, y)
             if sosed_podatki != None:
-                if sosed_podatki[3] != '':
+                if sosed_podatki[3] != PRAZNO:
                     st_sosedov += 1
         return st_sosedov
 
@@ -109,10 +107,9 @@ class Igra():
         '''Vrne [zmagovalna_polja, zmagovalec], ce je nekdo zmagal, NEODLOCENO, ce je plosca polna
         in ni zmagovalca, sicer vrne NI_KONEC.'''
         je_polno = True #gledamo, ce je celotno polje polno, ce ni, bomo True spremenili v False
-        print(self.igralno_polje)
+        
         for vrstica in self.igralno_polje:
             for polje in vrstica:
-                print(polje)
                 id, i, j, barva_polja = polje
                 
                 # funkcijo poklicemo po vsaki potezi, torej lahko pogledamo le barvo
@@ -121,7 +118,7 @@ class Igra():
                     continue
                 
                 # prav tako ne bomo preverjali vzorcev za prazna polja
-                if barva_polja == '':
+                if barva_polja == PRAZNO:
                     je_polno = False
                     continue
                 
@@ -145,7 +142,7 @@ class Igra():
                             break
                                 
                     if stevilo_polj_iste_barve == 6:
-                        if barva_polja == BARVA1:
+                        if barva == BARVA1:
                             zmagovalec = IGRALEC_1
                         else:
                             zmagovalec = IGRALEC_2
