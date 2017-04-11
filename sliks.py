@@ -2,6 +2,7 @@ import tkinter
 import math
 import copy
 import logging
+import os
 
 import logika_igre
 import clovek
@@ -63,6 +64,7 @@ class Gui():
 
         # Prični igro v načinu človek proti računalniku
         self.zacni_igro(clovek.Clovek(self), racunalnik.Racunalnik(self, minimax.Minimax(minimax.globina)))
+        # self.zacni_igro(clovek.Clovek(self), clovek.Clovek(self))
 
 
     def zacni_igro(self, igralec_1, igralec_2):
@@ -205,6 +207,7 @@ if __name__ == "__main__":
     root = tkinter.Tk()
     root.title("SIX")
 
+    logging.basicConfig(level=logging.DEBUG)
     aplikacija = Gui(root)
-    root.iconbitmap(r'..\six\ikona\matica.ico')
+    root.iconbitmap(os.path.join('ikona','matica.ico'))
     root.mainloop()

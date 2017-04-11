@@ -1,4 +1,5 @@
 import copy
+import logging
 
 #######################################################
 #                      PARAMETRI                      #
@@ -16,13 +17,13 @@ NI_KONEC = "ni konec"
 
 # VELIKOST IGRALNEGA POLJA
 STRANICA_SESTKOTNIKA = 20
-VELIKOST_MATRIKE = 3
+VELIKOST_MATRIKE = 10
 
-        
+
 #######################################################
-#                        IGRA                         # 
+#                        IGRA                         #
 #######################################################
-        
+
 class Igra():
 
     def __init__(self):
@@ -32,10 +33,10 @@ class Igra():
         #print(self.igralno_polje)
 
         self.na_potezi = IGRALEC_2
-        
+
         self.zgodovina = []
- 
-    
+
+
     def veljavnost_poteze(self, id):
         '''vrne True, če je poteza veljavna'''
         for vrstica in self.igralno_polje:
@@ -47,18 +48,18 @@ class Igra():
                 elif barva == PRAZNO:
                     if self.stevilo_sosedov(i, j) != 0:
                       return True
-        
+
 
     def stevilo_sosedov(self, i, j):
         '''vrne stevilo pobarvanih sosedov izbranega polja'''
         st_sosedov = 0
-        
+
         # koordinate sosedov se razlikujejo v sodih in lihih vrsticah
         if i % 2 == 0: # lihe (steti zacnemo z 0)
           okolica = [(i-1, j-1), (i, j-1), (i+1, j-1), (i+1, j), (i, j+1), (i-1, j)]
         else: # sode
           okolica = [(i-1, j), (i, j-1), (i+1, j), (i+1, j+1), (i, j+1), (i-1, j+1)]
-        
+
         for sosed in okolica:
             x, y = sosed
             if x < 0 or y < 0:
@@ -69,7 +70,7 @@ class Igra():
                     st_sosedov += 1
         return st_sosedov
 
-                    
+
     def zmagovalni_vzorci(self, i, j):
         '''vrne nastavke zmagovalnih vzorcev glede na sodost/lihost vrstice'''
         # rožica
@@ -94,53 +95,50 @@ class Igra():
         # trikotnik obrnjen na glavo
         TRIKOTNIK_NA_GLAVO_lih = [(i, j+1), (i, j+2), (i+1, j), (i+1, j+1), (i+2, j+1)]
         TRIKOTNIK_NA_GLAVO_sod = [(i, j+1), (i, j+2), (i+1, j+1), (i+1, j+2), (i+2, j+1)]
-        
+
         if i % 2 == 0: # lihe vrstice
             return [ROZICA_liha, VODORAVNA_CRTA, NARASCAJOCA_CRTA_liha,
                         PADAJOCA_CRTA_liha, TRIKOTNIK_lih, TRIKOTNIK_NA_GLAVO_lih]
         else: # sode vrstice
             return [ROZICA_soda, VODORAVNA_CRTA, NARASCAJOCA_CRTA_soda,
                         PADAJOCA_CRTA_soda, TRIKOTNIK_sod, TRIKOTNIK_NA_GLAVO_sod]
-        
+
 
     def je_morda_konec(self, barva):
         '''Vrne [zmagovalna_polja, zmagovalec], ce je nekdo zmagal, NEODLOCENO, ce je plosca polna
         in ni zmagovalca, sicer vrne NI_KONEC.'''
         je_polno = True #gledamo, ce je celotno polje polno, ce ni, bomo True spremenili v False
-        
+
         for vrstica in self.igralno_polje:
             for polje in vrstica:
                 id, i, j, barva_polja = polje
-                
+                je_polno = je_polno and (barva_polja != PRAZNO)
+
                 # funkcijo poklicemo po vsaki potezi, torej lahko pogledamo le barvo
                 # igralca, ki je pravkar opravil potezo
-                if barva_polja != barva:
-                    continue
-                
                 # prav tako ne bomo preverjali vzorcev za prazna polja
-                if barva_polja == PRAZNO:
-                    je_polno = False
+                if barva_polja != barva or barva_polja == PRAZNO:
                     continue
-                
+
                 # vzorci, ki jih moramo pregledati
                 za_pregled = self.zmagovalni_vzorci(i, j)
-                    
+
                 for vzorec in za_pregled:
                     stevilo_polj_iste_barve = 1
                     # shranimo si id polj, ki tvorijo zmagovalni vzorec
                     zmagovalna_polja = [id]
-                    
+
                     for sosednje_polje in vzorec:
                         m, n = sosednje_polje
                         sosednje_polje_podatki = safe_list_get(self.igralno_polje, m, n)
-                        
+
                         if sosednje_polje_podatki != None:
                             if sosednje_polje_podatki[3] == barva:
                                 stevilo_polj_iste_barve += 1
                                 zmagovalna_polja.append(sosednje_polje_podatki[0])
                         else:
                             break
-                                
+
                     if stevilo_polj_iste_barve == 6:
                         if barva == BARVA1:
                             zmagovalec = IGRALEC_1
@@ -151,10 +149,10 @@ class Igra():
             return NEODLOCENO
         else:
             return NI_KONEC
-            
+
     def razveljavi(self):
         self.igralno_polje, self.na_potezi = self.zgodovina.pop()
-        
+
     def kopija(self):
         '''vrne kopijo igre'''
         k = Igra()
@@ -165,17 +163,16 @@ class Igra():
     def stanje_igre(self):
         barva = barva_na_potezi(self.na_potezi)
         stanje = self.je_morda_konec(barva)
+        logging.debug("stanje_igre: barva {0}, stanje {1}".format(barva, stanje))
         if type(stanje) == list:
             return (stanje[0], stanje[1])
-        elif stanje == NEODLOCENO:
-            return (NEODLOCENO, None)
-        elif stanje == NI_KONEC:
-            return (NI_KONEC, None)
+        else:
+            return (stanje, None)
 
-    
-    
+
+
 #######################################################
-#                  OSTALE FUNKCIJE                    # 
+#                  OSTALE FUNKCIJE                    #
 #######################################################
 
 def barva_na_potezi(igralec):
