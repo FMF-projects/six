@@ -14,9 +14,13 @@ VISINA_TRIKOTNIKA = 3 ** (0.5) * (0.5) * logika_igre.STRANICA_SESTKOTNIKA
 STRANICA_SESTKOTNIKA = logika_igre.STRANICA_SESTKOTNIKA
 VELIKOST_MATRIKE = logika_igre.VELIKOST_MATRIKE
 
-BARVA1 = logika_igre.BARVA1
-BARVA2 = logika_igre.BARVA2
+IGRALEC_1 = logika_igre.IGRALEC_1
+IGRALEC_2 = logika_igre.IGRALEC_2
 PRAZNO = logika_igre.PRAZNO
+
+# neumno, ampak bolj razumljivo v večini primerov
+BARVA_1 = IGRALEC_1
+BARVA_2 = IGRALEC_2
 
 class Gui():
 
@@ -24,8 +28,8 @@ class Gui():
 
         # ZAČNEMO NOVO IGRO
         self.igra = None
-        self.igralec_1 = None # Objekt, ki igra BARVA1 (nastavimo ob začetku igre)
-        self.igralec_2 = None # Objekt, ki igra BARVA2 (nastavimo ob začetku igre)
+        self.igralec_1 = None # Objekt, ki igra IGRALEC_1 (nastavimo ob začetku igre)
+        self.igralec_2 = None # Objekt, ki igra IGRALEC_2 (nastavimo ob začetku igre)
 
 
         # PLOSCA
@@ -34,6 +38,11 @@ class Gui():
         self.plosca.pack()
 
         self.plosca.bind("<Button-1>", self.plosca_klik)
+
+        # Ključi so id, vrednosti koordinate.
+        self.id_koord = {}
+        # Obratno.
+        self.koord_id = {}
 
         # GLAVNI MENU
         glavni_menu = tkinter.Menu(master)
@@ -64,7 +73,7 @@ class Gui():
 
         # Prični igro v načinu človek proti računalniku
         self.zacni_igro(clovek.Clovek(self), racunalnik.Racunalnik(self, minimax.Minimax(minimax.globina)))
-        # self.zacni_igro(clovek.Clovek(self), clovek.Clovek(self))
+        #self.zacni_igro(clovek.Clovek(self), clovek.Clovek(self))
 
 
     def zacni_igro(self, igralec_1, igralec_2):
@@ -123,8 +132,6 @@ class Gui():
         '''nariše igralno polje sestavljeno iz šestkotnikov'''
         a = STRANICA_SESTKOTNIKA
         v = VISINA_TRIKOTNIKA
-        ## XXX self.id_koord = {}
-        ## XXX self.kooord_id = {}
         for i in range(VELIKOST_MATRIKE): # vrstica
             # preverimo sodost/lihost in tako določimo zamik prvega šestkotnika
             if i % 2 == 0: # lihe vrstice (ker začnemo šteti z 0)
@@ -132,26 +139,29 @@ class Gui():
                 for j in range(VELIKOST_MATRIKE): # stolpec
                     x = zacetni_x + j * 2 * v
                     y = i * 1.5 * a + 2
-                    # XXX tu naredimo sestkotnik, dobimo njegov id in potem nastavimo
-                    # self.id_koord[id] = (i,j)
-                    # self.koord_id[(i,j)] = id
-                    # XXX GUI nima pravice spreminjati self.igra.igralno_polje
-                    self.igra.igralno_polje[i][j] = [self.narisi_sestkotnik(x, y), i, j, PRAZNO]
+                    id = self.narisi_sestkotnik(x, y)
+                    self.id_koord[id] = (i, j)
+                    self.koord_id[(i,j)] = id
             else: # sode vrstice
                 zacetni_x = v + 2
                 for j in range(VELIKOST_MATRIKE): # stolpec
                     x = zacetni_x + j * 2 * v
                     y = i * 1.5 * a + 2
-                    self.igra.igralno_polje[i][j] = [self.narisi_sestkotnik(x, y), i, j, PRAZNO]
+                    id = self.narisi_sestkotnik(x, y)
+                    self.id_koord[id] = (i, j)
+                    self.koord_id[(i, j)] = id
 
         # pobarvamo prvo polje
-        sredina = self.igra.igralno_polje[VELIKOST_MATRIKE // 2][VELIKOST_MATRIKE // 2]
-        self.plosca.itemconfig(sredina[0], fill=BARVA1)
-        sredina[3]=BARVA1
+        i = VELIKOST_MATRIKE // 2
+        j = i
+        sredina = self.koord_id[(i,j)]
+        self.plosca.itemconfig(sredina, fill=BARVA_1)
+        self.igra.zabelezi_spremembo_barve(i, j, BARVA_1)
 
     def narisi_zmagovalni_vzorec(self, zmagovalna_polja):
         '''poudari zmagovalni vzorec'''
-        for id in zmagovalna_polja:
+        for (i, j) in zmagovalna_polja:
+            id = self.koord_id[(i, j)]
             self.plosca.itemconfig(id, width=3)
 
     def velikost_igralnega_polja(self, matrika):
@@ -166,47 +176,32 @@ class Gui():
         '''določi koordinate klika in pokliče potezo'''
         m = event.x
         n = event.y
-        self.povleci_potezo(m, n)
-
-    def povleci_potezo(self, m, n):
-        # pogledamo trenutnega igralca in izberemo ustrezno barvo
-        igralec = self.igra.na_potezi
-
-        if igralec == None:
-            return None
-
-        if igralec == logika_igre.IGRALEC_1:
-            barva = BARVA1
-        else:
-            barva = BARVA2
-
-        # najdemo polje, ki je najblizje kliku miske
         id = self.plosca.find_closest(m, n)[0]
+        (i, j) = self.id_koord[id]
+        self.povleci_potezo(i, j)
 
-        # preverimo veljavnost poteze in jo izvedemo
-        if self.igra.veljavnost_poteze(id) == True:
+    def povleci_potezo(self, i, j):
+        # preverimo veljavnost poteze, če je veljavna, v logika_igre spremenimo barvo,
+        # potem še sliks pobarva ustrezno polje
+        veljavnost = self.igra.veljavnost_poteze(i, j)
+        if veljavnost == True:
 
-            # shranimo igralno polje preden izvedemo potezo
-            kopija = copy.deepcopy(self.igra.igralno_polje)
-            self.igra.zgodovina.append((kopija, igralec))
+            # izvedemo potezo v logiki igre
+            self.izvedi_potezo(i, j)
 
-            # spremenimo barvo polja
+            # pobarvamo polje
+            id = self.koord_id[(i, j)]
+            barva = self.igra.na_potezi
             self.plosca.itemconfig(id, fill=barva)
-
-            # zabeležimo spremembo barve
-            for vrstica in self.igra.igralno_polje:
-                for polje in vrstica:
-                    if polje[0] == id:
-                        polje[3] = barva
 
             # preverimo, ali je igre morda ze konec
             konec_igre = self.igra.je_morda_konec(barva)
             if konec_igre != logika_igre.NI_KONEC and konec_igre != logika_igre.NEODLOCENO:
-                self.narisi_zmagovalni_vzorec(konec_igre[0])
+                self.narisi_zmagovalni_vzorec(konec_igre[1])
                 self.igra.na_potezi = None
             else:
                 # zamenjamo trenutnega igralca
-                self.igra.na_potezi = logika_igre.nasprotnik(igralec)
+                self.igra.na_potezi = logika_igre.nasprotnik(barva)
 
 
 if __name__ == "__main__":

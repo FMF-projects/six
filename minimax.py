@@ -2,15 +2,17 @@ import logika_igre
 
 import logging
 
-globina = 4
+globina = 1
 
 IGRALEC_1 = logika_igre.IGRALEC_1
 IGRALEC_2 = logika_igre.IGRALEC_2
 NEODLOCENO = logika_igre.NEODLOCENO
 NI_KONEC = logika_igre.NI_KONEC
 
-BARVA1 = logika_igre.BARVA1
-BARVA2 = logika_igre.BARVA2
+BARVA_1 = IGRALEC_1
+BARVA_2 = IGRALEC_2
+
+VELIKOST_MATRIKE = logika_igre.VELIKOST_MATRIKE
 
 class Minimax():
 
@@ -29,15 +31,11 @@ class Minimax():
     def stevilo_polj_v_vzorcu(self, vzorec, barva):
         '''Vrne število pobarvanih polj v izbranem vzorcu, izbrane barve. Ce v vzorcu nastopa
         sestkotnik nasprotnikove barve, vrne 0.'''
-        stevilo_polj = 1
-        for polje in vzorec:
-            i, j = polje
-            polje_podatki = self.logika_igre.safe_list_get(self.igra.igralno_polje, i, j)
-            if polje_podatki != None:
-                if polje_podatki[3] == barva:
-                    stevilo_polj += 1
-                else:
-                    return 0
+        stevilo_polj = 0
+        for (i, j) in vzorec:
+            if logika_igre.polje_obstaja(i, j) == True:
+                if self.igra.igralno_polje[i][j] == barva:
+                    stevilo_polj += 1     
         return stevilo_polj
 
     # Vrednosti igre
@@ -62,14 +60,15 @@ class Minimax():
             (0,1) : -Minimax.ZMAGA//100000
             }
         vr_pozicije = 0
-        for vrstica in self.igra.igralno_polje:
-            for polje in vrstica:
+        for i in range(VELIKOST_MATRIKE):
+            for j in range(VELIKOST_MATRIKE):
+                polje = self.igra.igralno_polje[i][j]
                 x1, x2 = 0, 0
-                i, j, barva = polje[1], polje[2], polje[3]
-                if barva == BARVA1:
+                barva = polje
+                if barva == BARVA_1:
                     for vzorec in self.igra.zmagovalni_vzorci(i, j):
                         x1 += self.stevilo_polj_v_vzorcu(vzorec, barva)
-                elif barva == BARVA2:
+                elif barva == BARVA_2:
                     for vzorec in self.igra.zmagovalni_vzorci(i, j):
                         x2 += self.stevilo_polj_v_vzorcu(vzorec, barva)
                 if (x1, x2) in vrednosti:
@@ -93,13 +92,15 @@ class Minimax():
 
     def minimax(self, globina, maksimiziramo):
         """Glavna metoda minimax."""
-        if self.prekinitev:
+        if self.prekinitev == True:
             # Sporočili so nam, da moramo prekiniti
             logging.debug ("Minimax prekinja, globina = {0}".format(globina))
             return (None, 0)
-        (zmagovalec, lst) = self.igra.stanje_igre()
+
+        (zmagovalec, zmagovalna_polja) = self.igra.stanje_igre()
+
         if zmagovalec in (IGRALEC_1, IGRALEC_2, NEODLOCENO):
-            logging.debug("minimax: končna pozicija {0}, {1}".format(zmagovalec, lst))
+            logging.debug("minimax: končna pozicija {0}, {1}".format(zmagovalec, zmagovalna_polja))
             # Igre je konec, vrnemo njeno vrednost
             if zmagovalec == self.jaz:
                 return (None, Minimax.ZMAGA)
@@ -107,6 +108,7 @@ class Minimax():
                 return (None, -Minimax.ZMAGA)
             else:
                 return (None, 0)
+
         elif zmagovalec == NI_KONEC:
             # Igre ni konec
             if globina == 0:
@@ -117,26 +119,29 @@ class Minimax():
                     # Maksimiziramo
                     najboljsa_poteza = None
                     vrednost_najboljse = -Minimax.NESKONCNO
-                    for p in self.igra.veljavne_poteze(): # ta funkcija ne obstaja, imava le funkcijo veljavnost poteze
-                        self.igra.povleci_potezo(p)
+                    for (i, j) in self.igra.veljavne_poteze(): 
+                        logging.debug("zgodovina: {0}".format(self.igra.zgodovina))
+                        self.igra.zabelezi_spremembo_barve(i, j, zmagovalec)
                         vrednost = self.minimax(globina-1, not maksimiziramo)[1]
                         self.igra.razveljavi()
                         if vrednost > vrednost_najboljse:
                             vrednost_najboljse = vrednost
-                            najboljsa_poteza = p
+                            najboljsa_poteza = (i, j)
                 else:
                     # Minimiziramo
                     najboljsa_poteza = None
                     vrednost_najboljse = Minimax.NESKONCNO
-                    for p in self.igra.veljavne_poteze():
-                        self.igra.povleci_potezo(p)
+                    for (i, j) in self.igra.veljavne_poteze():
+                        logging.debug("zgodovina: {0}".format(self.igra.zgodovina))
+                        self.igra.zabelezi_spremembo_barve(i, j, zmagovalec)
                         vrednost = self.minimax(globina-1, not maksimiziramo)[1]
                         self.igra.razveljavi()
                         if vrednost < vrednost_najboljse:
                             vrednost_najboljse = vrednost
-                            najboljsa_poteza = p
+                            najboljsa_poteza = (i, j)
 
                 assert (najboljsa_poteza is not None), "minimax: izračunana poteza je None"
                 return (najboljsa_poteza, vrednost_najboljse)
+
         else:
             assert False, "minimax: nedefinirano stanje igre"
