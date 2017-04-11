@@ -29,8 +29,7 @@ class Igra():
     def __init__(self):
 
         # SEZNAM ŠESTKOTNIKOV
-        self.igralno_polje = [[PRAZNO for i in range(VELIKOST_MATRIKE)] for j in range(VELIKOST_MATRIKE)]
-        #print(self.igralno_polje)
+        self.igralno_polje = [[PRAZNO for j in range(VELIKOST_MATRIKE)] for i in range(VELIKOST_MATRIKE)]
 
         self.na_potezi = IGRALEC_2
 
@@ -125,8 +124,6 @@ class Igra():
     def stanje_igre(self):
         '''Vrne (zmagovalna_polja, zmagovalec), ce je nekdo zmagal, NEODLOCENO, ce je plosca polna
         in ni zmagovalca, sicer vrne NI_KONEC.'''
-        # funkcijo poklicemo po vsaki potezi, torej lahko pogledamo le barvo
-        # igralca, ki je pravkar opravil potezo
         
         barva = self.na_potezi
         
@@ -134,11 +131,13 @@ class Igra():
 
         for i in range(VELIKOST_MATRIKE):
             for j in range(VELIKOST_MATRIKE):
+                
                 polje = self.igralno_polje[i][j]
                 je_polno = je_polno and (polje != PRAZNO)
 
-                # ne bomo preverjali vzorcev za prazna polja ali če je igralno polje polno
-                if polje != barva or polje == PRAZNO:
+                # funkcijo poklicemo po vsaki potezi, torej lahko pogledamo le barvo
+                # igralca, ki je pravkar opravil potezo
+                if polje != barva:
                     continue
 
                 # vzorci, ki jih moramo pregledati
@@ -149,11 +148,11 @@ class Igra():
                     # shranimo si koordinate polj, ki tvorijo zmagovalni vzorec
                     zmagovalna_polja = []
 
-                    for (i, j) in vzorec:
-                        if polje_obstaja(i, j) == True:
-                            if self.igralno_polje[i][j] == barva:
+                    for (x, y) in vzorec:
+                        if polje_obstaja(x, y) == True:
+                            if self.igralno_polje[x][y] == barva:
                                 stevilo_polj_iste_barve += 1
-                                zmagovalna_polja.append((i,j))        
+                                zmagovalna_polja.append((x,y))        
                         else:
                             break
 
@@ -163,8 +162,11 @@ class Igra():
                         zmagovalec = barva
                         return (zmagovalec, zmagovalna_polja)
         
+        # igralno polje je polno
         if je_polno == True:
             return (NEODLOCENO, None)
+            
+        # zmagovalca ni in igralno polje ni polno
         else:
             return (NI_KONEC, None)
 
@@ -177,20 +179,6 @@ class Igra():
         k.igralno_polje = [self.igralno_polje[i][:] for i in range(VELIKOST_MATRIKE)]
         k.na_potezi = self.na_potezi
         return k
-
-    # def stanje_igre(self):
-        # '''vrne par (zmagovalec, zmagovalna_polja), ali pa 
-        # (NEODLOCENO/NI_KONEC, None)'''
-        # barva = self.na_potezi
-        # stanje = self.je_morda_konec(barva)
-        # logging.debug("stanje_igre: barva {0}, stanje {1}".format(barva, stanje))
-        # if type(stanje) == list:
-            # zmagovalec, zmagovalna_polja = stanje[0], stanje[1]
-            # return (zmagovalec, zmagovalna_polja)
-        # else:
-            # return (stanje, None)
-
-
 
 #######################################################
 #                  OSTALE FUNKCIJE                    #

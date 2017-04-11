@@ -2,7 +2,7 @@ import logika_igre
 
 import logging
 
-globina = 1
+globina = 3
 
 IGRALEC_1 = logika_igre.IGRALEC_1
 IGRALEC_2 = logika_igre.IGRALEC_2
@@ -86,12 +86,15 @@ class Minimax():
         self.jaz = None
         self.igra = None
         logging.debug("minimax: poteza {0}, vrednost {1}, prekinitev {2}".format(poteza, vrednost, self.prekinitev))
-        if not self.prekinitev:
+        if self.prekinitev == False:
             # Potezo izvedemo v primeru, da nismo bili prekinjeni
             self.poteza = poteza
 
     def minimax(self, globina, maksimiziramo):
         """Glavna metoda minimax."""
+        # vrne par (poteza, vrednost), pri čemer je poteza
+        # sestavljena iz koordinat polja (i,j)
+        
         if self.prekinitev == True:
             # Sporočili so nam, da moramo prekiniti
             logging.debug ("Minimax prekinja, globina = {0}".format(globina))
@@ -120,8 +123,7 @@ class Minimax():
                     najboljsa_poteza = None
                     vrednost_najboljse = -Minimax.NESKONCNO
                     for (i, j) in self.igra.veljavne_poteze(): 
-                        logging.debug("zgodovina: {0}".format(self.igra.zgodovina))
-                        self.igra.zabelezi_spremembo_barve(i, j, zmagovalec)
+                        self.igra.izvedi_potezo(i, j)
                         vrednost = self.minimax(globina-1, not maksimiziramo)[1]
                         self.igra.razveljavi()
                         if vrednost > vrednost_najboljse:
@@ -132,8 +134,7 @@ class Minimax():
                     najboljsa_poteza = None
                     vrednost_najboljse = Minimax.NESKONCNO
                     for (i, j) in self.igra.veljavne_poteze():
-                        logging.debug("zgodovina: {0}".format(self.igra.zgodovina))
-                        self.igra.zabelezi_spremembo_barve(i, j, zmagovalec)
+                        self.igra.izvedi_potezo(i, j)
                         vrednost = self.minimax(globina-1, not maksimiziramo)[1]
                         self.igra.razveljavi()
                         if vrednost < vrednost_najboljse:

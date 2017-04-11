@@ -20,19 +20,26 @@ class Racunalnik():
             target=lambda: self.algoritem.izracunaj_potezo(self.gui.igra.kopija()))
 
         # Poženemo vlakno:
-        self.mislec.start()
         logging.debug ("racunalnik: mislec.start()")
+        self.mislec.start()
 
         # Gremo preverjat, ali je bila najdena poteza:
-        self.gui.plosca.after(100, self.preveri_potezo) # najbrz je treba v najinem primeru preveriti na igralnem polju?
+        self.gui.plosca.after(100, self.preveri_potezo)
 
     def preveri_potezo(self):
         """Vsakih 100ms preveri, ali je algoritem že izračunal potezo."""
-        if self.algoritem.poteza is not None:
+        poteza = self.algoritem.poteza
+        if  poteza != None:
+          
             # Algoritem je našel potezo, povleci jo, če ni bilo prekinitve
-            self.gui.povleci_potezo(self.algoritem.poteza)
+            
+            # self.algoritem.poteza vrne par (i, j)
+            # funkcija povleci_potezo pa sprejme i, j
+            self.gui.povleci_potezo(*poteza)
+            
             # Vzporedno vlakno ni več aktivno, zato ga "pozabimo"
             self.mislec = None
+        
         else:
             # Algoritem še ni našel poteze, preveri še enkrat čez 100ms
             self.gui.plosca.after(100, self.preveri_potezo)

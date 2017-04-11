@@ -77,8 +77,8 @@ class Gui():
 ###########################################################################
 
         # Prični igro v načinu človek proti računalniku
-        #self.zacni_igro(clovek.Clovek(self), racunalnik.Racunalnik(self, minimax.Minimax(minimax.globina)))
-        self.zacni_igro(clovek.Clovek(self), clovek.Clovek(self))
+        self.zacni_igro(clovek.Clovek(self), racunalnik.Racunalnik(self, minimax.Minimax(minimax.globina)))
+        #self.zacni_igro(clovek.Clovek(self), clovek.Clovek(self))
 
     def zacni_igro(self, igralec_1, igralec_2):
         """Nastavi stanje igre na zacetek igre.
