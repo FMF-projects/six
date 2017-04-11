@@ -8,6 +8,7 @@ import logging
 IGRALEC_1 = '1'
 IGRALEC_2 = '2'
 
+# XXX To so edine možne vrednost, ki jih spravimo v igralno_polje[i][j]
 BARVA1 = 'red'
 BARVA2 = 'blue'
 PRAZNO = ''
@@ -29,6 +30,7 @@ class Igra():
     def __init__(self):
 
         # SEZNAM ŠESTKOTNIKOV
+        # XXX: začenta vrednost polja mora biti PRAZNO
         self.igralno_polje = [[0 for i in range(VELIKOST_MATRIKE)] for j in range(VELIKOST_MATRIKE)]
         #print(self.igralno_polje)
 
@@ -37,6 +39,8 @@ class Igra():
         self.zgodovina = []
 
 
+    # XXX poteza je par (i,j) ki predstavlja koordinate v self.igralno_polje
+    # XXX potrebujemo metodo, ki za dani (i,j) vrne seznam (koordinat) njegovih sosedov
     def veljavnost_poteze(self, id):
         '''vrne True, če je poteza veljavna'''
         for vrstica in self.igralno_polje:
@@ -49,7 +53,12 @@ class Igra():
                     if self.stevilo_sosedov(i, j) != 0:
                       return True
 
+    def veljavne_poteze(self):
+        # XXX vrni seznam veljavnih potez
+        return [(i,j) for i in range(VELIKOST_MATRIKE) for j in range(VELIKOST_MATRIKE) if self.veljavnost_poteze(i,j)]
 
+
+    # XXX ko popravimo veljavnost_poteze, tega ne potrebujemo več
     def stevilo_sosedov(self, i, j):
         '''vrne stevilo pobarvanih sosedov izbranega polja'''
         st_sosedov = 0
@@ -71,6 +80,10 @@ class Igra():
         return st_sosedov
 
 
+    # XXX z velikimi crkami oznacujemo samo konstante, torej tiste vrednosti
+    # ki se nikoli ne spremenijo
+    # XXX popravi tako, da bo vračal šesterice, ki vsebujejo tudi polje (i,j)
+    #     potem povsod, kjer kličeš to funkcijo, upoštevaj spremembo
     def zmagovalni_vzorci(self, i, j):
         '''vrne nastavke zmagovalnih vzorcev glede na sodost/lihost vrstice'''
         # rožica

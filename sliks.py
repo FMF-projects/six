@@ -123,6 +123,8 @@ class Gui():
         '''nariše igralno polje sestavljeno iz šestkotnikov'''
         a = STRANICA_SESTKOTNIKA
         v = VISINA_TRIKOTNIKA
+        ## XXX self.id_koord = {}
+        ## XXX self.kooord_id = {}
         for i in range(VELIKOST_MATRIKE): # vrstica
             # preverimo sodost/lihost in tako določimo zamik prvega šestkotnika
             if i % 2 == 0: # lihe vrstice (ker začnemo šteti z 0)
@@ -130,6 +132,10 @@ class Gui():
                 for j in range(VELIKOST_MATRIKE): # stolpec
                     x = zacetni_x + j * 2 * v
                     y = i * 1.5 * a + 2
+                    # XXX tu naredimo sestkotnik, dobimo njegov id in potem nastavimo
+                    # self.id_koord[id] = (i,j)
+                    # self.koord_id[(i,j)] = id
+                    # XXX GUI nima pravice spreminjati self.igra.igralno_polje
                     self.igra.igralno_polje[i][j] = [self.narisi_sestkotnik(x, y), i, j, PRAZNO]
             else: # sode vrstice
                 zacetni_x = v + 2
