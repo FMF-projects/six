@@ -20,12 +20,12 @@ class Minimax():
         self.igra = None # objekt, ki opisuje igro (ga dobimo kasneje)
         self.jaz = None  # katerega igralca igramo (podatek dobimo kasneje)
         self.poteza = None # sem napišemo potezo, ko jo najdemo
-        
+
     def prekini(self):
         """Metoda, ki jo pokliče GUI, če je treba nehati razmišljati, ker
            je uporabnik zaprl okno ali izbral novo igro."""
         self.prekinitev = True
-    
+
     def stevilo_polj_v_vzorcu(self, vzorec, barva):
         '''Vrne število pobarvanih polj v izbranem vzorcu, izbrane barve. Ce v vzorcu nastopa
         sestkotnik nasprotnikove barve, vrne 0.'''
@@ -39,7 +39,7 @@ class Minimax():
                 else:
                     return 0
         return stevilo_polj
-    
+
     # Vrednosti igre
     ZMAGA = 100000
     NESKONCNO = ZMAGA + 1
@@ -75,8 +75,9 @@ class Minimax():
                 if (x1, x2) in vrednosti:
                     vr_pozicije += vrednosti[(x1,x2)]
         return vr_pozicije
-    
+
     def izracunaj_potezo(self, igra):
+        logging.debug ("minimax: racunamo potezo")
         self.igra = igra
         self.prekinitev = False # Glavno vlakno bo to nastavilo na True, če moramo nehati
         self.jaz = self.igra.na_potezi
@@ -85,9 +86,9 @@ class Minimax():
         (poteza, vrednost) = self.minimax(self.globina, True)
         self.jaz = None
         self.igra = None
+        logging.debug("minimax: poteza {0}, vrednost {1}, prekinitev {2}".format(poteza, vrednost, self.prekinitev))
         if not self.prekinitev:
             # Potezo izvedemo v primeru, da nismo bili prekinjeni
-            logging.debug("minimax: poteza {0}, vrednost {1}".format(poteza, vrednost))
             self.poteza = poteza
 
     def minimax(self, globina, maksimiziramo):
@@ -98,6 +99,7 @@ class Minimax():
             return (None, 0)
         (zmagovalec, lst) = self.igra.stanje_igre()
         if zmagovalec in (IGRALEC_1, IGRALEC_2, NEODLOCENO):
+            logging.debug("minimax: končna pozicija {0}, {1}".format(zmagovalec, lst))
             # Igre je konec, vrnemo njeno vrednost
             if zmagovalec == self.jaz:
                 return (None, Minimax.ZMAGA)
@@ -138,6 +140,3 @@ class Minimax():
                 return (najboljsa_poteza, vrednost_najboljse)
         else:
             assert False, "minimax: nedefinirano stanje igre"
-    
-        
-    

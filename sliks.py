@@ -2,6 +2,7 @@ import tkinter
 import math
 import copy
 import logging
+import os
 
 import logika_igre
 import clovek
@@ -20,13 +21,13 @@ PRAZNO = logika_igre.PRAZNO
 class Gui():
 
     def __init__(self, master):
-    
+
         # ZAČNEMO NOVO IGRO
         self.igra = None
         self.igralec_1 = None # Objekt, ki igra BARVA1 (nastavimo ob začetku igre)
         self.igralec_2 = None # Objekt, ki igra BARVA2 (nastavimo ob začetku igre)
 
-        
+
         # PLOSCA
         self.plosca = tkinter.Canvas(master, width=VISINA_TRIKOTNIKA * 2 * VELIKOST_MATRIKE + STRANICA_SESTKOTNIKA + 1
                                      , height=1.5 * STRANICA_SESTKOTNIKA * VELIKOST_MATRIKE + 0.5 * STRANICA_SESTKOTNIKA + 1)
@@ -63,6 +64,7 @@ class Gui():
 
         # Prični igro v načinu človek proti računalniku
         self.zacni_igro(clovek.Clovek(self), racunalnik.Racunalnik(self, minimax.Minimax(minimax.globina)))
+        # self.zacni_igro(clovek.Clovek(self), clovek.Clovek(self))
 
 
     def zacni_igro(self, igralec_1, igralec_2):
@@ -108,19 +110,21 @@ class Gui():
     def narisi_sestkotnik(self, x, y):
         a = STRANICA_SESTKOTNIKA
         v = VISINA_TRIKOTNIKA
-        t1 = (x, y + a * 0.5)
-        t2 = (x + v, y)
-        t3 = (x + 2 * v,y + (0.5) * a)
-        t4 = (x + 2 * v, y + 1.5 * a)
-        t5 = (x + v, y + 2 * a)
-        t6 = (x, y + 1.5 * a)
-        id = self.plosca.create_polygon(*t1, *t2, *t3, *t4, *t5, *t6, fill=PRAZNO, outline='black')
+        t = [x, y + a * 0.5,
+             x + v, y,
+             x + 2 * v,y + (0.5) * a,
+             x + 2 * v, y + 1.5 * a,
+             x + v, y + 2 * a,
+             x, y + 1.5 * a]
+        id = self.plosca.create_polygon(*t, fill=PRAZNO, outline='black')
         return id
 
     def napolni_igralno_polje(self):
         '''nariše igralno polje sestavljeno iz šestkotnikov'''
         a = STRANICA_SESTKOTNIKA
         v = VISINA_TRIKOTNIKA
+        ## XXX self.id_koord = {}
+        ## XXX self.kooord_id = {}
         for i in range(VELIKOST_MATRIKE): # vrstica
             # preverimo sodost/lihost in tako določimo zamik prvega šestkotnika
             if i % 2 == 0: # lihe vrstice (ker začnemo šteti z 0)
@@ -128,6 +132,10 @@ class Gui():
                 for j in range(VELIKOST_MATRIKE): # stolpec
                     x = zacetni_x + j * 2 * v
                     y = i * 1.5 * a + 2
+                    # XXX tu naredimo sestkotnik, dobimo njegov id in potem nastavimo
+                    # self.id_koord[id] = (i,j)
+                    # self.koord_id[(i,j)] = id
+                    # XXX GUI nima pravice spreminjati self.igra.igralno_polje
                     self.igra.igralno_polje[i][j] = [self.narisi_sestkotnik(x, y), i, j, PRAZNO]
             else: # sode vrstice
                 zacetni_x = v + 2
@@ -140,12 +148,12 @@ class Gui():
         sredina = self.igra.igralno_polje[VELIKOST_MATRIKE // 2][VELIKOST_MATRIKE // 2]
         self.plosca.itemconfig(sredina[0], fill=BARVA1)
         sredina[3]=BARVA1
-             
+
     def narisi_zmagovalni_vzorec(self, zmagovalna_polja):
         '''poudari zmagovalni vzorec'''
         for id in zmagovalna_polja:
             self.plosca.itemconfig(id, width=3)
-        
+
     def velikost_igralnega_polja(self, matrika):
         '''spremeni velikost igralnega polja'''
         #TODO
@@ -153,38 +161,38 @@ class Gui():
         #VELIKOST_MATRIKE = matrika
         #self.nova_igra()
         pass
-        
+
     def plosca_klik(self, event):
         '''določi koordinate klika in pokliče potezo'''
         m = event.x
         n = event.y
         self.povleci_potezo(m, n)
-     
+
     def povleci_potezo(self, m, n):
         # pogledamo trenutnega igralca in izberemo ustrezno barvo
         igralec = self.igra.na_potezi
 
         if igralec == None:
             return None
-            
+
         if igralec == logika_igre.IGRALEC_1:
             barva = BARVA1
         else:
             barva = BARVA2
-        
+
         # najdemo polje, ki je najblizje kliku miske
         id = self.plosca.find_closest(m, n)[0]
-        
+
         # preverimo veljavnost poteze in jo izvedemo
         if self.igra.veljavnost_poteze(id) == True:
-        
+
             # shranimo igralno polje preden izvedemo potezo
             kopija = copy.deepcopy(self.igra.igralno_polje)
             self.igra.zgodovina.append((kopija, igralec))
-            
+
             # spremenimo barvo polja
             self.plosca.itemconfig(id, fill=barva)
-            
+
             # zabeležimo spremembo barve
             for vrstica in self.igra.igralno_polje:
                 for polje in vrstica:
@@ -200,11 +208,12 @@ class Gui():
                 # zamenjamo trenutnega igralca
                 self.igra.na_potezi = logika_igre.nasprotnik(igralec)
 
-    
+
 if __name__ == "__main__":
     root = tkinter.Tk()
     root.title("SIX")
 
+    logging.basicConfig(level=logging.DEBUG)
     aplikacija = Gui(root)
-    root.iconbitmap(r'..\six\ikona\matica.ico')
+    root.iconbitmap(os.path.join('ikona','matica.ico'))
     root.mainloop()

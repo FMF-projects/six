@@ -1,4 +1,5 @@
 import threading  # za vzporedno izvajanje
+import logging
 
 from minimax import *
 
@@ -20,6 +21,7 @@ class Racunalnik():
 
         # Poženemo vlakno:
         self.mislec.start()
+        logging.debug ("racunalnik: mislec.start()")
 
         # Gremo preverjat, ali je bila najdena poteza:
         self.gui.plosca.after(100, self.preveri_potezo) # najbrz je treba v najinem primeru preveriti na igralnem polju?
