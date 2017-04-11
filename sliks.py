@@ -20,13 +20,13 @@ PRAZNO = logika_igre.PRAZNO
 class Gui():
 
     def __init__(self, master):
-    
+
         # ZAČNEMO NOVO IGRO
         self.igra = None
         self.igralec_1 = None # Objekt, ki igra BARVA1 (nastavimo ob začetku igre)
         self.igralec_2 = None # Objekt, ki igra BARVA2 (nastavimo ob začetku igre)
 
-        
+
         # PLOSCA
         self.plosca = tkinter.Canvas(master, width=VISINA_TRIKOTNIKA * 2 * VELIKOST_MATRIKE + STRANICA_SESTKOTNIKA + 1
                                      , height=1.5 * STRANICA_SESTKOTNIKA * VELIKOST_MATRIKE + 0.5 * STRANICA_SESTKOTNIKA + 1)
@@ -108,13 +108,13 @@ class Gui():
     def narisi_sestkotnik(self, x, y):
         a = STRANICA_SESTKOTNIKA
         v = VISINA_TRIKOTNIKA
-        t1 = (x, y + a * 0.5)
-        t2 = (x + v, y)
-        t3 = (x + 2 * v,y + (0.5) * a)
-        t4 = (x + 2 * v, y + 1.5 * a)
-        t5 = (x + v, y + 2 * a)
-        t6 = (x, y + 1.5 * a)
-        id = self.plosca.create_polygon(*t1, *t2, *t3, *t4, *t5, *t6, fill=PRAZNO, outline='black')
+        t = [x, y + a * 0.5,
+             x + v, y,
+             x + 2 * v,y + (0.5) * a,
+             x + 2 * v, y + 1.5 * a,
+             x + v, y + 2 * a,
+             x, y + 1.5 * a]
+        id = self.plosca.create_polygon(*t, fill=PRAZNO, outline='black')
         return id
 
     def napolni_igralno_polje(self):
@@ -140,12 +140,12 @@ class Gui():
         sredina = self.igra.igralno_polje[VELIKOST_MATRIKE // 2][VELIKOST_MATRIKE // 2]
         self.plosca.itemconfig(sredina[0], fill=BARVA1)
         sredina[3]=BARVA1
-             
+
     def narisi_zmagovalni_vzorec(self, zmagovalna_polja):
         '''poudari zmagovalni vzorec'''
         for id in zmagovalna_polja:
             self.plosca.itemconfig(id, width=3)
-        
+
     def velikost_igralnega_polja(self, matrika):
         '''spremeni velikost igralnega polja'''
         #TODO
@@ -153,38 +153,38 @@ class Gui():
         #VELIKOST_MATRIKE = matrika
         #self.nova_igra()
         pass
-        
+
     def plosca_klik(self, event):
         '''določi koordinate klika in pokliče potezo'''
         m = event.x
         n = event.y
         self.povleci_potezo(m, n)
-     
+
     def povleci_potezo(self, m, n):
         # pogledamo trenutnega igralca in izberemo ustrezno barvo
         igralec = self.igra.na_potezi
 
         if igralec == None:
             return None
-            
+
         if igralec == logika_igre.IGRALEC_1:
             barva = BARVA1
         else:
             barva = BARVA2
-        
+
         # najdemo polje, ki je najblizje kliku miske
         id = self.plosca.find_closest(m, n)[0]
-        
+
         # preverimo veljavnost poteze in jo izvedemo
         if self.igra.veljavnost_poteze(id) == True:
-        
+
             # shranimo igralno polje preden izvedemo potezo
             kopija = copy.deepcopy(self.igra.igralno_polje)
             self.igra.zgodovina.append((kopija, igralec))
-            
+
             # spremenimo barvo polja
             self.plosca.itemconfig(id, fill=barva)
-            
+
             # zabeležimo spremembo barve
             for vrstica in self.igra.igralno_polje:
                 for polje in vrstica:
@@ -200,7 +200,7 @@ class Gui():
                 # zamenjamo trenutnega igralca
                 self.igra.na_potezi = logika_igre.nasprotnik(igralec)
 
-    
+
 if __name__ == "__main__":
     root = tkinter.Tk()
     root.title("SIX")
