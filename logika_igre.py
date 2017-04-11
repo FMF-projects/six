@@ -1,4 +1,3 @@
-import copy
 import logging
 
 #######################################################
@@ -45,7 +44,7 @@ class Igra():
         barva = self.na_potezi
         if self.veljavnost_poteze(i, j) == True:    
             # shranimo igralno polje preden izvedemo potezo
-            kopija = copy.deepcopy(self.igralno_polje)
+            kopija = [self.igralno_polje[i][:] for i in range(VELIKOST_MATRIKE)]
             self.zgodovina.append((kopija, barva))
             self.zabelezi_spremembo_barve(i, j, barva)
             
@@ -123,11 +122,13 @@ class Igra():
                         padajoca_crta_soda, trikotnik_sod, trikotnik_na_glavo_sod]
 
 
-    def je_morda_konec(self, barva):
-        '''Vrne [zmagovalna_polja, zmagovalec], ce je nekdo zmagal, NEODLOCENO, ce je plosca polna
+    def stanje_igre(self):
+        '''Vrne (zmagovalna_polja, zmagovalec), ce je nekdo zmagal, NEODLOCENO, ce je plosca polna
         in ni zmagovalca, sicer vrne NI_KONEC.'''
         # funkcijo poklicemo po vsaki potezi, torej lahko pogledamo le barvo
         # igralca, ki je pravkar opravil potezo
+        
+        barva = self.na_potezi
         
         je_polno = True #gledamo, ce je celotno polje polno, ce ni, bomo True spremenili v False
 
@@ -156,14 +157,16 @@ class Igra():
                         else:
                             break
 
+                    # našli smo vzorec sestavljen iz šestih polj
+                    # enake barve, torej imamo zmagovalca
                     if stevilo_polj_iste_barve == 6:
                         zmagovalec = barva
-                        return [zmagovalec, zmagovalna_polja]
+                        return (zmagovalec, zmagovalna_polja)
         
         if je_polno == True:
-            return NEODLOCENO
+            return (NEODLOCENO, None)
         else:
-            return NI_KONEC
+            return (NI_KONEC, None)
 
     def razveljavi(self):
         self.igralno_polje, self.na_potezi = self.zgodovina.pop()
@@ -171,19 +174,21 @@ class Igra():
     def kopija(self):
         '''vrne kopijo igre'''
         k = Igra()
-        k.igralno_polje = copy.deepcopy(self.igralno_polje)
+        k.igralno_polje = [self.igralno_polje[i][:] for i in range(VELIKOST_MATRIKE)]
         k.na_potezi = self.na_potezi
         return k
 
-    def stanje_igre(self):
-        barva = self.na_potezi
-        stanje = self.je_morda_konec(barva)
-        logging.debug("stanje_igre: barva {0}, stanje {1}".format(barva, stanje))
-        if type(stanje) == list:
-            zmagovalec, zmagovalna_polja = stanje[0], stanje[1]
-            return (zmagovalec, zmagovalna_polja)
-        else:
-            return (stanje, None)
+    # def stanje_igre(self):
+        # '''vrne par (zmagovalec, zmagovalna_polja), ali pa 
+        # (NEODLOCENO/NI_KONEC, None)'''
+        # barva = self.na_potezi
+        # stanje = self.je_morda_konec(barva)
+        # logging.debug("stanje_igre: barva {0}, stanje {1}".format(barva, stanje))
+        # if type(stanje) == list:
+            # zmagovalec, zmagovalna_polja = stanje[0], stanje[1]
+            # return (zmagovalec, zmagovalna_polja)
+        # else:
+            # return (stanje, None)
 
 
 

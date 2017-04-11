@@ -1,6 +1,5 @@
 import tkinter
 import math
-import copy
 import logging
 import os
 
@@ -189,8 +188,8 @@ class Gui():
             self.plosca.itemconfig(id, fill=barva)
 
             # preverimo, ali je igre morda ze konec
-            konec_igre = self.igra.je_morda_konec(barva)
-            if type(konec_igre) == list:
+            konec_igre = self.igra.stanje_igre()
+            if type(konec_igre[1]) == list:
                 self.narisi_zmagovalni_vzorec(konec_igre[1])
                 self.igra.na_potezi = None
                 logging.debug("konec igre")
