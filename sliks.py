@@ -22,6 +22,9 @@ PRAZNO = logika_igre.PRAZNO
 BARVA_1 = IGRALEC_1
 BARVA_2 = IGRALEC_2
 
+NI_KONEC = logika_igre.NI_KONEC
+NEODLOCENO = logika_igre.NEODLOCENO
+
 class Gui():
 
     def __init__(self, master):
@@ -48,6 +51,9 @@ class Gui():
         glavni_menu = tkinter.Menu(master)
         master.config(menu=glavni_menu)
 
+        #TODO
+        # izbira clovek, racunalnik
+
         # PODMENUJI
         igra_menu = tkinter.Menu(glavni_menu, tearoff=0)
         glavni_menu.add_cascade(label="Igra", menu=igra_menu)
@@ -72,9 +78,8 @@ class Gui():
 ###########################################################################
 
         # Prični igro v načinu človek proti računalniku
-        self.zacni_igro(clovek.Clovek(self), racunalnik.Racunalnik(self, minimax.Minimax(minimax.globina)))
-        #self.zacni_igro(clovek.Clovek(self), clovek.Clovek(self))
-
+        #self.zacni_igro(clovek.Clovek(self), racunalnik.Racunalnik(self, minimax.Minimax(minimax.globina)))
+        self.zacni_igro(clovek.Clovek(self), clovek.Clovek(self))
 
     def zacni_igro(self, igralec_1, igralec_2):
         """Nastavi stanje igre na zacetek igre.
@@ -85,20 +90,9 @@ class Gui():
         # Shranimo igralce
         self.igralec_1 = igralec_1
         self.igralec_2 = igralec_2
-        # Križec je prvi na potezi
-        #self.napis.set("Na potezi je X.")
+        # prvi na potezi je igralec 2, saj je prvo polje že pobarvano
+        # z barvo igralca 1
         self.igralec_2.igraj()
-
-    # def koncaj_igro(self, zmagovalec, trojka):
-    #     """Nastavi stanje igre na konec igre."""
-    #     if zmagovalec == IGRALEC_X:
-    #         self.napis.set("Zmagal je X.")
-    #         self.narisi_zmagovalno_trojico(zmagovalec, trojka)
-    #     elif zmagovalec == IGRALEC_O:
-    #         self.napis.set("Zmagal je O.")
-    #         self.narisi_zmagovalno_trojico(zmagovalec, trojka)
-    #     else:
-    #         self.napis.set("Neodločeno.")
 
     def prekini_igralce(self):
         """Sporoči igralcem, da morajo nehati razmišljati."""
@@ -187,7 +181,7 @@ class Gui():
         if veljavnost == True:
 
             # izvedemo potezo v logiki igre
-            self.izvedi_potezo(i, j)
+            self.igra.izvedi_potezo(i, j)
 
             # pobarvamo polje
             id = self.koord_id[(i, j)]
@@ -196,12 +190,16 @@ class Gui():
 
             # preverimo, ali je igre morda ze konec
             konec_igre = self.igra.je_morda_konec(barva)
-            if konec_igre != logika_igre.NI_KONEC and konec_igre != logika_igre.NEODLOCENO:
+            if type(konec_igre) == list:
                 self.narisi_zmagovalni_vzorec(konec_igre[1])
                 self.igra.na_potezi = None
+                logging.debug("konec igre")
+                #TODO izpiši, da je igre konec
             else:
                 # zamenjamo trenutnega igralca
                 self.igra.na_potezi = logika_igre.nasprotnik(barva)
+        else:
+            pass
 
 
 if __name__ == "__main__":

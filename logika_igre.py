@@ -43,15 +43,21 @@ class Igra():
     
     def izvedi_potezo(self, i, j):
         barva = self.na_potezi
-        if veljavnost_poteze(i, j) == True:    
+        if self.veljavnost_poteze(i, j) == True:    
             # shranimo igralno polje preden izvedemo potezo
             kopija = copy.deepcopy(self.igralno_polje)
-            self.igra.zgodovina.append((kopija, barva))
-            zabelezi_spremembo_barve(i, j, barva)
+            self.zgodovina.append((kopija, barva))
+            self.zabelezi_spremembo_barve(i, j, barva)
             
 
     def veljavnost_poteze(self, i, j):
         '''vrne True, če je poteza veljavna'''
+        
+        # če je igre konec je igralec nastavljen na None
+        # torej je poteza neveljavna
+        if self.na_potezi == None:
+            return False
+            
         okolica = self.seznam_sosedov(i, j)
         stevilo_sosedov = 0
         for sosed in okolica:
