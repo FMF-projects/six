@@ -40,22 +40,38 @@ class Igra():
         self.igralno_polje[i][j] = barva
     
     def izvedi_potezo(self, i, j):
-        barva = self.na_potezi
+        '''izvede potezo, in vrne (zmagovalec, zmagovalna_polja) če je veljavna ali pa vrne None, če ni'''
+        # poteza je veljavna
         if self.veljavnost_poteze(i, j) == True:    
+            
             # shranimo igralno polje preden izvedemo potezo
             kopija = [self.igralno_polje[i][:] for i in range(VELIKOST_MATRIKE)]
+            barva = self.na_potezi
             self.zgodovina.append((kopija, barva))
+            
+            # zabelezimo spremembo barve
             self.zabelezi_spremembo_barve(i, j, barva)
+            
+            # preverimo, ali je igre morda ze konec
+            (zmagovalec, zmagovalna_polja) = self.stanje_igre()
+            
+            if zmagovalec == NI_KONEC:
+                # spremenimo igralca na potezi
+                self.na_potezi = nasprotnik(barva)
+            else:
+                # spremenimo igralca na potezi na None
+                self.na_potezi = None
+            
+            return (zmagovalec, zmagovalna_polja)
+        
+        # poteza ni veljavna
+        else:
+            return None
             
 
     def veljavnost_poteze(self, i, j):
         '''vrne True, če je poteza veljavna'''
-        
-        # če je igre konec je igralec nastavljen na None
-        # torej je poteza neveljavna
-        if self.na_potezi == None:
-            return False
-            
+           
         okolica = self.seznam_sosedov(i, j)
         stevilo_sosedov = 0
         for sosed in okolica:
@@ -122,8 +138,8 @@ class Igra():
 
 
     def stanje_igre(self):
-        '''Vrne (zmagovalna_polja, zmagovalec), ce je nekdo zmagal, NEODLOCENO, ce je plosca polna
-        in ni zmagovalca, sicer vrne NI_KONEC.'''
+        '''Vrne (zmagovalec, zmagovalna_polja), ce je nekdo zmagal, (NEODLOCENO, None) ce je plosca polna
+        in ni zmagovalca, sicer vrne (NI_KONEC, None)'''
         
         barva = self.na_potezi
         

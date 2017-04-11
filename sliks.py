@@ -108,6 +108,7 @@ class Gui():
         self.plosca.delete('all')
         self.napolni_igralno_polje()
         self.igra.na_potezi = logika_igre.IGRALEC_2
+        # TODO za racunalnik
 
     def narisi_sestkotnik(self, x, y):
         a = STRANICA_SESTKOTNIKA
@@ -167,38 +168,59 @@ class Gui():
 
     def plosca_klik(self, event):
         '''določi koordinate klika in pokliče potezo'''
-        m = event.x
-        n = event.y
-        id = self.plosca.find_closest(m, n)[0]
-        (i, j) = self.id_koord[id]
-        self.povleci_potezo(i, j)
+        # ce ni nihce na potezi klik kar ignoriramo
+        if self.igra.na_potezi == None:
+            pass
+        else:
+            m = event.x
+            n = event.y
+            id = self.plosca.find_closest(m, n)[0]
+            (i, j) = self.id_koord[id]
+            self.povleci_potezo(i, j)
 
     def povleci_potezo(self, i, j):
-        # preverimo veljavnost poteze, če je veljavna, v logika_igre spremenimo barvo,
-        # potem še sliks pobarva ustrezno polje
-        veljavnost = self.igra.veljavnost_poteze(i, j)
-        if veljavnost == True:
+        '''logiki igre naroci naj povlece potezo, 
+        potem pa se ona ukvarja z veljavnostjo''' 
+        
+        barva = self.igra.na_potezi
+        
+        # izvedemo potezo v logiki igre
+        poteza = self.igra.izvedi_potezo(i, j)
 
-            # izvedemo potezo v logiki igre
-            self.igra.izvedi_potezo(i, j)
-
+        # poteza ni bila veljavna, ne naredimo nič
+        if poteza == None:
+            pass
+        
+        else:
             # pobarvamo polje
             id = self.koord_id[(i, j)]
-            barva = self.igra.na_potezi
             self.plosca.itemconfig(id, fill=barva)
 
-            # preverimo, ali je igre morda ze konec
-            konec_igre = self.igra.stanje_igre()
-            if type(konec_igre[1]) == list:
-                self.narisi_zmagovalni_vzorec(konec_igre[1])
+            # nadaljujemo igro
+            (zmagovalec, zmagovalna_polja) = poteza
+            
+            if zmagovalec == NI_KONEC:
+                # poklicemo naslednjega igralca
+                if self.igra.na_potezi == IGRALEC_1:
+                    self.igralec_1.igraj()
+                else:
+                    self.igralec_2.igraj()   
+
+            #TODO funkcija koncaj igro, ki obravnava primera neodloceno in zmaga
+            elif zmagovalec == NEODLOCENO:
+                # TODO napisi da je neodloceno in ustavi igralce
+                pass
+
+            else:
+                self.narisi_zmagovalni_vzorec(zmagovalna_polja)
                 self.igra.na_potezi = None
                 logging.debug("konec igre")
+                #TODO ustavi igralce
                 #TODO izpiši, da je igre konec
-            else:
-                # zamenjamo trenutnega igralca
-                self.igra.na_potezi = logika_igre.nasprotnik(barva)
-        else:
-            pass
+
+            
+            
+            
 
 
 if __name__ == "__main__":

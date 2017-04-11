@@ -2,7 +2,7 @@ import logika_igre
 
 import logging
 
-globina = 3
+globina = 4
 
 IGRALEC_1 = logika_igre.IGRALEC_1
 IGRALEC_2 = logika_igre.IGRALEC_2
@@ -91,6 +91,7 @@ class Minimax():
             self.poteza = poteza
 
     def minimax(self, globina, maksimiziramo):
+        print(globina)
         """Glavna metoda minimax."""
         # vrne par (poteza, vrednost), pri čemer je poteza
         # sestavljena iz koordinat polja (i,j)
