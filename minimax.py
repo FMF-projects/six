@@ -2,7 +2,7 @@ import logika_igre
 
 import logging
 
-globina = 4
+globina = 3
 
 IGRALEC_1 = logika_igre.IGRALEC_1
 IGRALEC_2 = logika_igre.IGRALEC_2
@@ -48,6 +48,8 @@ class Minimax():
         k vrednosti trenutne pozicije za dolocenega igralca. Ce v nekem vzorcu nastopa
         vsaj eno polje nasprotnikove barve, to polje ne doprinese nicesar, sicer pa doloceno vrednost.'''
         vrednosti = {
+            (6,0): Minimax.ZMAGA,
+            (0,6): -Minimax.ZMAGA,
             (5,0) : Minimax.ZMAGA//10,
             (0,5) : -Minimax.ZMAGA//10,
             (4,0) : Minimax.ZMAGA//100,
@@ -60,6 +62,7 @@ class Minimax():
             (0,1) : -Minimax.ZMAGA//100000
             }
         vr_pozicije = 0
+
         for i in range(VELIKOST_MATRIKE):
             for j in range(VELIKOST_MATRIKE):
                 polje = self.igra.igralno_polje[i][j]
@@ -73,6 +76,7 @@ class Minimax():
                         x2 += self.stevilo_polj_v_vzorcu(vzorec, barva)
                 if (x1, x2) in vrednosti:
                     vr_pozicije += vrednosti[(x1,x2)]
+                    #print(vr_pozicije)
         return vr_pozicije
 
     def izracunaj_potezo(self, igra):
@@ -91,7 +95,7 @@ class Minimax():
             self.poteza = poteza
 
     def minimax(self, globina, maksimiziramo):
-        print(globina)
+        #logging.debug("Minimax globina = {0}".format(globina))
         """Glavna metoda minimax."""
         # vrne par (poteza, vrednost), pri čemer je poteza
         # sestavljena iz koordinat polja (i,j)
@@ -123,24 +127,33 @@ class Minimax():
                     # Maksimiziramo
                     najboljsa_poteza = None
                     vrednost_najboljse = -Minimax.NESKONCNO
-                    for (i, j) in self.igra.veljavne_poteze(): 
+                    for (i, j) in self.igra.veljavne_poteze():
+                        #print(self.igra.veljavne_poteze())
+                        #logging.debug("Minimax vrednost_najboljse = {0}".format(vrednost_najboljse))
                         self.igra.izvedi_potezo(i, j)
                         vrednost = self.minimax(globina-1, not maksimiziramo)[1]
+                        logging.debug("Minimax vrednost, polje = {0}, {1}".format(vrednost, (i,j)))
                         self.igra.razveljavi()
                         if vrednost > vrednost_najboljse:
                             vrednost_najboljse = vrednost
                             najboljsa_poteza = (i, j)
+
+                            #logging.debug("Minimax najboljsa_poteza = {0}".format(najboljsa_poteza))
                 else:
                     # Minimiziramo
                     najboljsa_poteza = None
                     vrednost_najboljse = Minimax.NESKONCNO
+
                     for (i, j) in self.igra.veljavne_poteze():
+                        #logging.debug("Minimax vrednost_najboljse = {0}".format(vrednost_najboljse))
                         self.igra.izvedi_potezo(i, j)
                         vrednost = self.minimax(globina-1, not maksimiziramo)[1]
+                        logging.debug("Minimax vrednost, polje = {0}, {1}".format(vrednost, (i, j)))
                         self.igra.razveljavi()
                         if vrednost < vrednost_najboljse:
                             vrednost_najboljse = vrednost
                             najboljsa_poteza = (i, j)
+                            #logging.debug("Minimax najboljsa_poteza = {0}".format(najboljsa_poteza))
 
                 assert (najboljsa_poteza is not None), "minimax: izračunana poteza je None"
                 return (najboljsa_poteza, vrednost_najboljse)

@@ -168,15 +168,12 @@ class Gui():
 
     def plosca_klik(self, event):
         '''določi koordinate klika in pokliče potezo'''
-        # ce ni nihce na potezi klik kar ignoriramo
-        if self.igra.na_potezi == None:
-            pass
-        else:
-            m = event.x
-            n = event.y
-            id = self.plosca.find_closest(m, n)[0]
-            (i, j) = self.id_koord[id]
-            self.povleci_potezo(i, j)
+        # ce ni nihce na potezi, klik kar ignoriramo
+        m = event.x
+        n = event.y
+        id = self.plosca.find_closest(m, n)[0]
+        (i, j) = self.id_koord[id]
+        self.povleci_potezo(i, j)
 
     def povleci_potezo(self, i, j):
         '''logiki igre naroci naj povlece potezo, 

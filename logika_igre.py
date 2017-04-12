@@ -36,25 +36,24 @@ class Igra():
         self.zgodovina = []
 
     def zabelezi_spremembo_barve(self, i, j, barva):
-        '''nastavi barvo polja v igralnem polju'''        
+        '''nastavi barvo polja v igralnem polju'''
         self.igralno_polje[i][j] = barva
+        #print(self.igralno_polje)
     
     def izvedi_potezo(self, i, j):
         '''izvede potezo, in vrne (zmagovalec, zmagovalna_polja) če je veljavna ali pa vrne None, če ni'''
         # poteza je veljavna
-        if self.veljavnost_poteze(i, j) == True:    
-            
+        if self.veljavnost_poteze(i, j) == True:
             # shranimo igralno polje preden izvedemo potezo
             kopija = [self.igralno_polje[i][:] for i in range(VELIKOST_MATRIKE)]
             barva = self.na_potezi
             self.zgodovina.append((kopija, barva))
-            
+
             # zabelezimo spremembo barve
             self.zabelezi_spremembo_barve(i, j, barva)
-            
+
             # preverimo, ali je igre morda ze konec
             (zmagovalec, zmagovalna_polja) = self.stanje_igre()
-            
             if zmagovalec == NI_KONEC:
                 # spremenimo igralca na potezi
                 self.na_potezi = nasprotnik(barva)
@@ -71,7 +70,12 @@ class Igra():
 
     def veljavnost_poteze(self, i, j):
         '''vrne True, če je poteza veljavna'''
+
+        if self.na_potezi == None:
+            return False
            
+        if self.igralno_polje[i][j] != PRAZNO:
+            return False
         okolica = self.seznam_sosedov(i, j)
         stevilo_sosedov = 0
         for sosed in okolica:
