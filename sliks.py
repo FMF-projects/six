@@ -8,43 +8,48 @@ import clovek
 import racunalnik
 import minimax
 
+
 # visina trikotnikov v sestkotniku
 VISINA_TRIKOTNIKA = 3 ** (0.5) * (0.5) * logika_igre.STRANICA_SESTKOTNIKA
 STRANICA_SESTKOTNIKA = logika_igre.STRANICA_SESTKOTNIKA
-VELIKOST_MATRIKE = logika_igre.VELIKOST_MATRIKE
 
 IGRALEC_1 = logika_igre.IGRALEC_1
 IGRALEC_2 = logika_igre.IGRALEC_2
 PRAZNO = logika_igre.PRAZNO
 
-# neumno, ampak bolj razumljivo v večini primerov
-BARVA_1 = IGRALEC_1
-BARVA_2 = IGRALEC_2
-
 NI_KONEC = logika_igre.NI_KONEC
 NEODLOCENO = logika_igre.NEODLOCENO
+
+kombinacije_barv = [('red','blue'), ('red', 'green'), ('blue','green')]
 
 class Gui():
 
     def __init__(self, master):
+
+        # PLOSCA
+        self.plosca = tkinter.Canvas(master, width=self.velikost_igralnega_polja()[0]
+                                     , height=self.velikost_igralnega_polja()[1])
+        self.plosca.grid(row=1, column=0)
+
+        self.plosca.bind("<Button-1>", self.plosca_klik)
+
+        # polje, v katerem izpisujemo sporocila
+        self.napis = tkinter.StringVar(master, value="Dobrodošli v six!")
+        tkinter.Label(master, textvariable=self.napis).grid(row=0, column=0)
+
+        # Ključi so id, vrednosti koordinate.
+        self.id_koord = {}
+        # Obratno.
+        self.koord_id = {}
 
         # ZAČNEMO NOVO IGRO
         self.igra = None
         self.igralec_1 = None # Objekt, ki igra IGRALEC_1 (nastavimo ob začetku igre)
         self.igralec_2 = None # Objekt, ki igra IGRALEC_2 (nastavimo ob začetku igre)
 
-
-        # PLOSCA
-        self.plosca = tkinter.Canvas(master, width=VISINA_TRIKOTNIKA * 2 * VELIKOST_MATRIKE + STRANICA_SESTKOTNIKA + 1
-                                     , height=1.5 * STRANICA_SESTKOTNIKA * VELIKOST_MATRIKE + 0.5 * STRANICA_SESTKOTNIKA + 1)
-        self.plosca.pack()
-
-        self.plosca.bind("<Button-1>", self.plosca_klik)
-
-        # Ključi so id, vrednosti koordinate.
-        self.id_koord = {}
-        # Obratno.
-        self.koord_id = {}
+        # Prični igro v načinu človek proti računalniku
+        #self.zacni_igro(clovek.Clovek(self), racunalnik.Racunalnik(self, minimax.Minimax(minimax.globina)))
+        self.zacni_igro(clovek.Clovek(self), clovek.Clovek(self))
 
         # GLAVNI MENU
         glavni_menu = tkinter.Menu(master)
@@ -59,13 +64,22 @@ class Gui():
 
         velikost_menu = tkinter.Menu(glavni_menu, tearoff=0)
         glavni_menu.add_cascade(label="Velikost polja", menu=velikost_menu)
+        
+        barva_menu = tkinter.Menu(glavni_menu, tearoff=0)
+        glavni_menu.add_cascade(label="Barva", menu=barva_menu)
 
 
         # IZBIRE V PODMENUJIH
         igra_menu.add_command(label="Nova igra", command=self.nova_igra)
-        velikost_menu.add_command(label="10x10", command=self.velikost_igralnega_polja(10))
-        velikost_menu.add_command(label="15x15", command=self.velikost_igralnega_polja(15))
-        velikost_menu.add_command(label="20x20", command=self.velikost_igralnega_polja(20))
+        
+        velikost_menu.add_command(label="10x10", command=lambda: self.spremeni_velikost_igralnega_polja(10))
+        velikost_menu.add_command(label="15x15", command=lambda: self.spremeni_velikost_igralnega_polja(15))
+        velikost_menu.add_command(label="20x20", command=lambda: self.spremeni_velikost_igralnega_polja(20))
+
+        barva_menu.add_command(label="rdeča-modra", command=lambda: self.barva_igralnih_polj(0))
+        barva_menu.add_command(label="rdeča-zelena", command=lambda: self.barva_igralnih_polj(1))
+        barva_menu.add_command(label="modra-zelena", command=lambda: self.barva_igralnih_polj(2))
+        
 
         # UKAZI OB ZAGONU
         #self.napolni_igralno_polje()
@@ -76,9 +90,8 @@ class Gui():
 #               NEVARNO OBMOCJE                                           #
 ###########################################################################
 
-        # Prični igro v načinu človek proti računalniku
-        self.zacni_igro(clovek.Clovek(self), racunalnik.Racunalnik(self, minimax.Minimax(minimax.globina)))
-        #self.zacni_igro(clovek.Clovek(self), clovek.Clovek(self))
+
+        
 
     def zacni_igro(self, igralec_1, igralec_2):
         """Nastavi stanje igre na zacetek igre.
@@ -126,11 +139,12 @@ class Gui():
         '''nariše igralno polje sestavljeno iz šestkotnikov'''
         a = STRANICA_SESTKOTNIKA
         v = VISINA_TRIKOTNIKA
-        for i in range(VELIKOST_MATRIKE): # vrstica
+        velikost = logika_igre.VELIKOST_MATRIKE
+        for i in range(velikost): # vrstica
             # preverimo sodost/lihost in tako določimo zamik prvega šestkotnika
             if i % 2 == 0: # lihe vrstice (ker začnemo šteti z 0)
                 zacetni_x = 2
-                for j in range(VELIKOST_MATRIKE): # stolpec
+                for j in range(velikost): # stolpec
                     x = zacetni_x + j * 2 * v
                     y = i * 1.5 * a + 2
                     id = self.narisi_sestkotnik(x, y)
@@ -138,7 +152,7 @@ class Gui():
                     self.koord_id[(i,j)] = id
             else: # sode vrstice
                 zacetni_x = v + 2
-                for j in range(VELIKOST_MATRIKE): # stolpec
+                for j in range(velikost): # stolpec
                     x = zacetni_x + j * 2 * v
                     y = i * 1.5 * a + 2
                     id = self.narisi_sestkotnik(x, y)
@@ -146,25 +160,44 @@ class Gui():
                     self.koord_id[(i, j)] = id
 
         # pobarvamo prvo polje
-        i = VELIKOST_MATRIKE // 2
-        j = i
-        sredina = self.koord_id[(i,j)]
-        self.plosca.itemconfig(sredina, fill=BARVA_1)
-        self.igra.zabelezi_spremembo_barve(i, j, BARVA_1)
+        self.pobarvaj_prvo_polje()
 
+    def pobarvaj_prvo_polje(self):
+        '''pobarva prvo polje z barvo igralca 1 in spremembo zabeleži v logiko igre'''
+        i = logika_igre.VELIKOST_MATRIKE // 2
+        j = i
+        barva = logika_igre.IGRALEC_1
+        sredina = self.koord_id[(i,j)]
+        self.plosca.itemconfig(sredina, fill=barva)
+        self.igra.zabelezi_spremembo_barve(i, j, barva)
+        
+    
     def narisi_zmagovalni_vzorec(self, zmagovalna_polja):
         '''poudari zmagovalni vzorec'''
         for (i, j) in zmagovalna_polja:
             id = self.koord_id[(i, j)]
             self.plosca.itemconfig(id, width=3)
 
-    def velikost_igralnega_polja(self, matrika):
+    def velikost_igralnega_polja(self):
+        '''izracuna velikost igralnega polja'''
+        VELIKOST_MATRIKE = logika_igre.VELIKOST_MATRIKE
+        sirina = VISINA_TRIKOTNIKA * 2 * VELIKOST_MATRIKE + STRANICA_SESTKOTNIKA + 1
+        visina = 1.5 * STRANICA_SESTKOTNIKA * VELIKOST_MATRIKE + 0.5 * STRANICA_SESTKOTNIKA + 1
+        return (sirina, visina)
+
+    def spremeni_velikost_igralnega_polja(self, velikost):
         '''spremeni velikost igralnega polja'''
-        #TODO
-        #okno se mora ponovno naložiti
-        #VELIKOST_MATRIKE = matrika
-        #self.nova_igra()
-        pass
+        logika_igre.VELIKOST_MATRIKE = velikost
+        (sirina, visina) = self.velikost_igralnega_polja()
+        self.plosca.config(width=sirina, height=visina)
+        self.nova_igra()
+        
+    def barva_igralnih_polj(self, kombinacija):
+        '''spremeni barvo igralnih polj'''
+        logika_igre.IGRALEC_1 = kombinacije_barv[kombinacija][0]
+        logika_igre.IGRALEC_2 = kombinacije_barv[kombinacija][1]
+        self.nova_igra()
+        
 
     def plosca_klik(self, event):
         '''določi koordinate klika in pokliče potezo'''
