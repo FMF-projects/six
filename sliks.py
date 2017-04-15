@@ -107,7 +107,7 @@ class Gui():
     def nova_igra(self):
         '''počisti ploščo in nariše novo mrežo'''
         self.igra = logika_igre.Igra()
-        self.napis.set('Na potezi je {0}'.format(self.izpis_igralca(IGRALEC_2)))
+        self.napis.set('Na potezi je {0}.'.format(self.izpis_igralca(IGRALEC_2)))
         self.plosca.delete('all')
         self.napolni_igralno_polje()
         self.igra.na_potezi = logika_igre.IGRALEC_2
@@ -142,10 +142,10 @@ class Gui():
                 # poklicemo naslednjega igralca
                 if self.igra.na_potezi == IGRALEC_1:
                     self.igralec_1.igraj()
-                    self.napis.set('Na potezi je {0}'.format(self.izpis_igralca(IGRALEC_1)))
+                    self.napis.set('Na potezi je {0}.'.format(self.izpis_igralca(IGRALEC_1)))
                 else:
                     self.igralec_2.igraj()
-                    self.napis.set('Na potezi je {0}'.format(self.izpis_igralca(IGRALEC_2)))
+                    self.napis.set('Na potezi je {0}.'.format(self.izpis_igralca(IGRALEC_2)))
 
             else:
                 self.konec_igre(zmagovalec, zmagovalna_polja)
@@ -244,7 +244,7 @@ class Gui():
     def izpis_igralca(self, igralec):
         '''pravilno sklanja ime igralca, za izpis uporabniku'''
         if igralec == 'red':
-            return 'rdeèi'
+            return 'rdeči'
         elif igralec == 'blue':
             return 'modri'
         elif igralec == 'green':
@@ -254,14 +254,14 @@ class Gui():
         '''uvede ustrezne spremembe v oknu'''
         # igre je konec, imamo zmagovalca
         if zmagovalec in [IGRALEC_1, IGRALEC_2]:
-            self.napis.set('Zmagal je {0}'.format(self.izpis_igralca(zmagovalec)))
+            self.napis.set('Zmagal je {0}.'.format(self.izpis_igralca(zmagovalec)))
             for (i, j) in zmagovalna_polja:
                 id = self.koord_id[(i, j)]
                 self.plosca.itemconfig(id, width=3)
 
         # igre je konec, rezultat je izenacen
         else:
-            self.napis.set('Igra je neodloèena.')
+            self.napis.set('Igra je neodločena.')
             
             
 
@@ -269,7 +269,7 @@ class Gui():
 if __name__ == "__main__":
     root = tkinter.Tk()
     root.title("SIX")
-
+    root.resizable(width=False, height=False)
     logging.basicConfig(level=logging.DEBUG)
     aplikacija = Gui(root)
     root.iconbitmap(os.path.join('ikona','matica.ico'))
