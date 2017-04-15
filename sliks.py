@@ -8,6 +8,9 @@ import clovek
 import racunalnik
 import minimax
 
+###########################################################################
+#               KONSTANTE                                                 #
+###########################################################################
 
 # visina trikotnikov v sestkotniku
 VISINA_TRIKOTNIKA = 3 ** (0.5) * (0.5) * logika_igre.STRANICA_SESTKOTNIKA
@@ -22,6 +25,10 @@ NEODLOCENO = logika_igre.NEODLOCENO
 
 kombinacije_barv = [('red','blue'), ('red', 'green'), ('blue','green')]
 
+###########################################################################
+#               GUI                                                       #
+###########################################################################
+
 class Gui():
 
     def __init__(self, master):
@@ -33,30 +40,26 @@ class Gui():
 
         self.plosca.bind("<Button-1>", self.plosca_klik)
 
-        # polje, v katerem izpisujemo sporocila
-        self.napis = tkinter.StringVar(master, value="Dobrodošli v six!")
+        # POLJE ZA SPOROCILA
+        self.napis = tkinter.StringVar(master, value='')
         tkinter.Label(master, textvariable=self.napis).grid(row=0, column=0)
-
+        
+        # SHRANJEVANJE PODATKOV O POLJIH
         # Ključi so id, vrednosti koordinate.
         self.id_koord = {}
         # Obratno.
         self.koord_id = {}
-
+        
         # ZAČNEMO NOVO IGRO
         self.igra = None
         self.igralec_1 = None # Objekt, ki igra IGRALEC_1 (nastavimo ob začetku igre)
         self.igralec_2 = None # Objekt, ki igra IGRALEC_2 (nastavimo ob začetku igre)
 
-        # Prični igro v načinu človek proti računalniku
-        #self.zacni_igro(clovek.Clovek(self), racunalnik.Racunalnik(self, minimax.Minimax(minimax.globina)))
         self.zacni_igro(clovek.Clovek(self), clovek.Clovek(self))
 
         # GLAVNI MENU
         glavni_menu = tkinter.Menu(master)
         master.config(menu=glavni_menu)
-
-        #TODO
-        # izbira clovek, racunalnik
 
         # PODMENUJI
         igra_menu = tkinter.Menu(glavni_menu, tearoff=0)
@@ -68,9 +71,12 @@ class Gui():
         barva_menu = tkinter.Menu(glavni_menu, tearoff=0)
         glavni_menu.add_cascade(label="Barva", menu=barva_menu)
 
-
         # IZBIRE V PODMENUJIH
         igra_menu.add_command(label="Nova igra", command=self.nova_igra)
+        igra_menu.add_command(label="Človek - Človek", command=lambda: self.nacin_igre(0))
+        igra_menu.add_command(label="Človek - Računalnik", command=lambda: self.nacin_igre(1))
+        igra_menu.add_command(label="Računalnik - Človek", command=lambda: self.nacin_igre(2))
+        igra_menu.add_command(label="Računalnik - Računalnik", command=lambda: self.nacin_igre(3))
         
         velikost_menu.add_command(label="10x10", command=lambda: self.spremeni_velikost_igralnega_polja(10))
         velikost_menu.add_command(label="15x15", command=lambda: self.spremeni_velikost_igralnega_polja(15))
@@ -79,19 +85,11 @@ class Gui():
         barva_menu.add_command(label="rdeča-modra", command=lambda: self.barva_igralnih_polj(0))
         barva_menu.add_command(label="rdeča-zelena", command=lambda: self.barva_igralnih_polj(1))
         barva_menu.add_command(label="modra-zelena", command=lambda: self.barva_igralnih_polj(2))
-        
-
-        # UKAZI OB ZAGONU
-        #self.napolni_igralno_polje()
-        #print(self.igra.igralno_polje)
 
 
-###########################################################################
-#               NEVARNO OBMOCJE                                           #
-###########################################################################
-
-
-        
+    ###########################################################################
+    #                           IGRA                                          #
+    ###########################################################################
 
     def zacni_igro(self, igralec_1, igralec_2):
         """Nastavi stanje igre na zacetek igre.
@@ -106,22 +104,65 @@ class Gui():
         # z barvo igralca 1
         self.igralec_2.igraj()
 
-    def prekini_igralce(self):
-        """Sporoči igralcem, da morajo nehati razmišljati."""
-        logging.debug ("prekinjam igralce")
-        if self.igralec_1: self.igralec_1.racunalnik.prekini()
-        if self.igralec_2: self.igralec_2.racunalnik.prekini()
-
-
-###########################################################################
-
     def nova_igra(self):
         '''počisti ploščo in nariše novo mrežo'''
         self.igra = logika_igre.Igra()
+        self.napis.set('Na potezi je {0}'.format(self.izpis_igralca(IGRALEC_2)))
         self.plosca.delete('all')
         self.napolni_igralno_polje()
         self.igra.na_potezi = logika_igre.IGRALEC_2
         # TODO za racunalnik
+
+    def prekini_igralce(self):
+        """Sporoči igralcem, da morajo nehati razmišljati."""
+        logging.debug ("prekinjam igralce")
+        if self.igralec_1: self.igralec_1.prekini()
+        if self.igralec_2: self.igralec_2.prekini()
+
+    def povleci_potezo(self, i, j):
+        '''logiki igre naroci naj povlece potezo, 
+        potem pa se ona ukvarja z veljavnostjo''' 
+        barva = self.igra.na_potezi
+        
+        # izvedemo potezo v logiki igre
+        poteza = self.igra.izvedi_potezo(i, j)
+
+        # poteza ni bila veljavna, ne naredimo nič
+        if poteza == None:
+            pass
+        # poteza je bila veljavna
+        else:
+            # pobarvamo polje
+            id = self.koord_id[(i, j)]
+            self.plosca.itemconfig(id, fill=barva)
+
+            # nadaljujemo igro
+            (zmagovalec, zmagovalna_polja) = poteza
+            if zmagovalec == NI_KONEC:
+                # poklicemo naslednjega igralca
+                if self.igra.na_potezi == IGRALEC_1:
+                    self.igralec_1.igraj()
+                    self.napis.set('Na potezi je {0}'.format(self.izpis_igralca(IGRALEC_1)))
+                else:
+                    self.igralec_2.igraj()
+                    self.napis.set('Na potezi je {0}'.format(self.izpis_igralca(IGRALEC_2)))
+
+            else:
+                self.konec_igre(zmagovalec, zmagovalna_polja)
+                self.prekini_igralce()
+                self.igra.na_potezi = None            
+        
+    ###########################################################################
+    #                  OSTALE FUNKCIJE                                        #
+    ###########################################################################
+
+    def plosca_klik(self, event):
+        '''določi koordinate klika in pokliče potezo'''
+        m = event.x
+        n = event.y
+        id = self.plosca.find_closest(m, n)[0]
+        (i, j) = self.id_koord[id]
+        self.povleci_potezo(i, j)
 
     def narisi_sestkotnik(self, x, y):
         a = STRANICA_SESTKOTNIKA
@@ -158,7 +199,6 @@ class Gui():
                     id = self.narisi_sestkotnik(x, y)
                     self.id_koord[id] = (i, j)
                     self.koord_id[(i, j)] = id
-
         # pobarvamo prvo polje
         self.pobarvaj_prvo_polje()
 
@@ -170,13 +210,6 @@ class Gui():
         sredina = self.koord_id[(i,j)]
         self.plosca.itemconfig(sredina, fill=barva)
         self.igra.zabelezi_spremembo_barve(i, j, barva)
-        
-    
-    def narisi_zmagovalni_vzorec(self, zmagovalna_polja):
-        '''poudari zmagovalni vzorec'''
-        for (i, j) in zmagovalna_polja:
-            id = self.koord_id[(i, j)]
-            self.plosca.itemconfig(id, width=3)
 
     def velikost_igralnega_polja(self):
         '''izracuna velikost igralnega polja'''
@@ -197,58 +230,38 @@ class Gui():
         logika_igre.IGRALEC_1 = kombinacije_barv[kombinacija][0]
         logika_igre.IGRALEC_2 = kombinacije_barv[kombinacija][1]
         self.nova_igra()
-        
 
-    def plosca_klik(self, event):
-        '''določi koordinate klika in pokliče potezo'''
-        # ce ni nihce na potezi, klik kar ignoriramo
-        m = event.x
-        n = event.y
-        id = self.plosca.find_closest(m, n)[0]
-        (i, j) = self.id_koord[id]
-        self.povleci_potezo(i, j)
+    def nacin_igre(self, nacin):
+        '''nastavi igralce'''
+        nacini_igre = [(clovek.Clovek(self), clovek.Clovek(self)),
+                (clovek.Clovek(self), racunalnik.Racunalnik(self, minimax.Minimax(minimax.globina))),
+                (racunalnik.Racunalnik(self, minimax.Minimax(minimax.globina)), clovek.Clovek(self)),
+                (racunalnik.Racunalnik(self, minimax.Minimax(minimax.globina)), racunalnik.Racunalnik(self, minimax.Minimax(minimax.globina)))]
+                
+        (igralec_1, igralec_2) = nacini_igre[nacin]
+        self.zacni_igro(igralec_1, igralec_2)
 
-    def povleci_potezo(self, i, j):
-        '''logiki igre naroci naj povlece potezo, 
-        potem pa se ona ukvarja z veljavnostjo''' 
-        
-        barva = self.igra.na_potezi
-        
-        # izvedemo potezo v logiki igre
-        poteza = self.igra.izvedi_potezo(i, j)
+    def izpis_igralca(self, igralec):
+        '''pravilno sklanja ime igralca, za izpis uporabniku'''
+        if igralec == 'red':
+            return 'rdeèi'
+        elif igralec == 'blue':
+            return 'modri'
+        elif igralec == 'green':
+            return 'zeleni'
 
-        # poteza ni bila veljavna, ne naredimo nič
-        if poteza == None:
-            pass
-        
+    def konec_igre(self, zmagovalec, zmagovalna_polja):
+        '''uvede ustrezne spremembe v oknu'''
+        # igre je konec, imamo zmagovalca
+        if zmagovalec in [IGRALEC_1, IGRALEC_2]:
+            self.napis.set('Zmagal je {0}'.format(self.izpis_igralca(zmagovalec)))
+            for (i, j) in zmagovalna_polja:
+                id = self.koord_id[(i, j)]
+                self.plosca.itemconfig(id, width=3)
+
+        # igre je konec, rezultat je izenacen
         else:
-            # pobarvamo polje
-            id = self.koord_id[(i, j)]
-            self.plosca.itemconfig(id, fill=barva)
-
-            # nadaljujemo igro
-            (zmagovalec, zmagovalna_polja) = poteza
-            
-            if zmagovalec == NI_KONEC:
-                # poklicemo naslednjega igralca
-                if self.igra.na_potezi == IGRALEC_1:
-                    self.igralec_1.igraj()
-                else:
-                    self.igralec_2.igraj()   
-
-            #TODO funkcija koncaj igro, ki obravnava primera neodloceno in zmaga
-            elif zmagovalec == NEODLOCENO:
-                # TODO napisi da je neodloceno in ustavi igralce
-                pass
-
-            else:
-                self.narisi_zmagovalni_vzorec(zmagovalna_polja)
-                self.igra.na_potezi = None
-                logging.debug("konec igre")
-                #TODO ustavi igralce
-                #TODO izpiši, da je igre konec
-
-            
+            self.napis.set('Igra je neodloèena.')
             
             
 
