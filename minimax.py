@@ -40,7 +40,7 @@ class Minimax():
 
     # Vrednosti igre
     ZMAGA = 100000
-    NESKONCNO = ZMAGA + 1
+    NESKONCNO = 100 * ZMAGA
 
     def vrednost_pozicije(self):
         '''Smo v trenutnem stanju, torej sestkotniki so obarvani, kot pac so.
@@ -66,17 +66,15 @@ class Minimax():
         for i in range(VELIKOST_MATRIKE):
             for j in range(VELIKOST_MATRIKE):
                 polje = self.igra.igralno_polje[i][j]
-                x1, x2 = 0, 0
                 barva = polje
-                if barva == BARVA_1:
-                    for vzorec in self.igra.zmagovalni_vzorci(i, j):
-                        x1 += self.stevilo_polj_v_vzorcu(vzorec, barva)
-                elif barva == BARVA_2:
-                    for vzorec in self.igra.zmagovalni_vzorci(i, j):
-                        x2 += self.stevilo_polj_v_vzorcu(vzorec, barva)
-                if (x1, x2) in vrednosti:
-                    vr_pozicije += vrednosti[(x1,x2)]
-                    #print(vr_pozicije)
+
+                for vzorec in self.igra.zmagovalni_vzorci(i, j):
+                    x1 = self.stevilo_polj_v_vzorcu(vzorec, barva)
+                    x2 = self.stevilo_polj_v_vzorcu(vzorec, logika_igre.nasprotnik(barva))
+                    #print('st polj v vzorcu:', self.stevilo_polj_v_vzorcu(vzorec, barva))
+                    if (x1, x2) in vrednosti:
+                        vr_pozicije += vrednosti[(x1,x2)]
+                        #print('vr pozicije, (x1,x2)',vr_pozicije, (x1,x2))
         return vr_pozicije
 
     def izracunaj_potezo(self, igra):
@@ -106,6 +104,7 @@ class Minimax():
             return (None, 0)
 
         (zmagovalec, zmagovalna_polja) = self.igra.stanje_igre()
+        print(zmagovalec, zmagovalna_polja)
 
         if zmagovalec in (IGRALEC_1, IGRALEC_2, NEODLOCENO):
             logging.debug("minimax: končna pozicija {0}, {1}".format(zmagovalec, zmagovalna_polja))
@@ -127,35 +126,40 @@ class Minimax():
                     # Maksimiziramo
                     najboljsa_poteza = None
                     vrednost_najboljse = -Minimax.NESKONCNO
+                    vrednosti = []
                     for (i, j) in self.igra.veljavne_poteze():
                         #print(self.igra.veljavne_poteze())
                         #logging.debug("Minimax vrednost_najboljse = {0}".format(vrednost_najboljse))
                         self.igra.izvedi_potezo(i, j)
                         vrednost = self.minimax(globina-1, not maksimiziramo)[1]
-                        logging.debug("Minimax vrednost, polje = {0}, {1}".format(vrednost, (i,j)))
+                        vrednosti.append(vrednost)
+                        logging.debug("Minimax vrednost = {0}, polje {1}".format(vrednost, (i,j)))
                         self.igra.razveljavi()
                         if vrednost > vrednost_najboljse:
                             vrednost_najboljse = vrednost
                             najboljsa_poteza = (i, j)
+                        print('najboljsa poteza:', najboljsa_poteza)
 
                             #logging.debug("Minimax najboljsa_poteza = {0}".format(najboljsa_poteza))
                 else:
                     # Minimiziramo
                     najboljsa_poteza = None
                     vrednost_najboljse = Minimax.NESKONCNO
-
+                    vrednosti = []
                     for (i, j) in self.igra.veljavne_poteze():
                         #logging.debug("Minimax vrednost_najboljse = {0}".format(vrednost_najboljse))
                         self.igra.izvedi_potezo(i, j)
                         vrednost = self.minimax(globina-1, not maksimiziramo)[1]
-                        logging.debug("Minimax vrednost, polje = {0}, {1}".format(vrednost, (i, j)))
+                        vrednosti.append(vrednost)
+                        logging.debug("Minimax vrednost = {0}, polje {1}".format(vrednost, (i, j)))
                         self.igra.razveljavi()
                         if vrednost < vrednost_najboljse:
                             vrednost_najboljse = vrednost
                             najboljsa_poteza = (i, j)
                             #logging.debug("Minimax najboljsa_poteza = {0}".format(najboljsa_poteza))
+                        print('najboljsa poteza:', najboljsa_poteza)
 
-                assert (najboljsa_poteza is not None), "minimax: izračunana poteza je None"
+                assert (najboljsa_poteza is not None), "minimax: izračunana poteza je None \n" + str(vrednosti)
                 return (najboljsa_poteza, vrednost_najboljse)
 
         else:

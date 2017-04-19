@@ -17,7 +17,7 @@ NI_KONEC = "ni konec"
 
 # VELIKOST IGRALNEGA POLJA
 STRANICA_SESTKOTNIKA = 20
-VELIKOST_MATRIKE = 10
+VELIKOST_MATRIKE = 5
 
 
 #######################################################
@@ -71,8 +71,8 @@ class Igra():
     def veljavnost_poteze(self, i, j):
         '''vrne True, če je poteza veljavna'''
 
-        if self.na_potezi == None:
-            return False
+        #if self.na_potezi == None:
+         #   return False TODO razmisliti
            
         if self.igralno_polje[i][j] != PRAZNO:
             return False
@@ -217,5 +217,5 @@ def nasprotnik(igralec):
         return IGRALEC_2
     elif igralec == IGRALEC_2:
         return IGRALEC_1
-    else:
-        assert False, "neveljaven nasprotnik"
+    #else:
+     #   assert False, "neveljaven nasprotnik"
