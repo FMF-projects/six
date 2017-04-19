@@ -33,9 +33,8 @@ class Minimax():
         sestkotnik nasprotnikove barve, vrne 0.'''
         stevilo_polj = 0
         for (i, j) in vzorec:
-            if logika_igre.polje_obstaja(i, j) == True:
-                if self.igra.igralno_polje[i][j] == barva:
-                    stevilo_polj += 1     
+            if self.igra.igralno_polje[i][j] == barva:
+                stevilo_polj += 1
         return stevilo_polj
 
     # Vrednosti igre
@@ -65,13 +64,10 @@ class Minimax():
 
         for i in range(VELIKOST_MATRIKE):
             for j in range(VELIKOST_MATRIKE):
-                polje = self.igra.igralno_polje[i][j]
-                barva = polje
-
                 for vzorec in self.igra.zmagovalni_vzorci(i, j):
-                    x1 = self.stevilo_polj_v_vzorcu(vzorec, barva)
-                    x2 = self.stevilo_polj_v_vzorcu(vzorec, logika_igre.nasprotnik(barva))
-                    #print('st polj v vzorcu:', self.stevilo_polj_v_vzorcu(vzorec, barva))
+                    x1 = self.stevilo_polj_v_vzorcu(vzorec, self.igra.na_potezi)
+                    x2 = self.stevilo_polj_v_vzorcu(vzorec, logika_igre.nasprotnik(self.igra.na_potezi))
+                    # print('st polj v vzorcu:', self.stevilo_polj_v_vzorcu(vzorec, self.igra.na_potezi))
                     if (x1, x2) in vrednosti:
                         vr_pozicije += vrednosti[(x1,x2)]
                         #print('vr pozicije, (x1,x2)',vr_pozicije, (x1,x2))
@@ -97,7 +93,7 @@ class Minimax():
         """Glavna metoda minimax."""
         # vrne par (poteza, vrednost), pri čemer je poteza
         # sestavljena iz koordinat polja (i,j)
-        
+
         if self.prekinitev == True:
             # Sporočili so nam, da moramo prekiniti
             logging.debug ("Minimax prekinja, globina = {0}".format(globina))
