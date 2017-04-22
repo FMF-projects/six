@@ -9,9 +9,6 @@ IGRALEC_2 = logika_igre.IGRALEC_2
 NEODLOCENO = logika_igre.NEODLOCENO
 NI_KONEC = logika_igre.NI_KONEC
 
-BARVA_1 = IGRALEC_1
-BARVA_2 = IGRALEC_2
-
 VELIKOST_MATRIKE = logika_igre.VELIKOST_MATRIKE
 
 class Minimax():
@@ -29,8 +26,7 @@ class Minimax():
         self.prekinitev = True
 
     def stevilo_polj_v_vzorcu(self, vzorec, barva):
-        '''Vrne število pobarvanih polj v izbranem vzorcu, izbrane barve. Ce v vzorcu nastopa
-        sestkotnik nasprotnikove barve, vrne 0.'''
+        '''Vrne število polj izbrane barve v izbranem vzorcu'''
         stevilo_polj = 0
         for (i, j) in vzorec:
             if self.igra.igralno_polje[i][j] == barva:
@@ -100,7 +96,7 @@ class Minimax():
             return (None, 0)
 
         (zmagovalec, zmagovalna_polja) = self.igra.stanje_igre()
-        print(zmagovalec, zmagovalna_polja)
+        #print(zmagovalec, zmagovalna_polja)
 
         if zmagovalec in (IGRALEC_1, IGRALEC_2, NEODLOCENO):
             logging.debug("minimax: končna pozicija {0}, {1}".format(zmagovalec, zmagovalna_polja))
@@ -134,7 +130,7 @@ class Minimax():
                         if vrednost > vrednost_najboljse:
                             vrednost_najboljse = vrednost
                             najboljsa_poteza = (i, j)
-                        print('najboljsa poteza:', najboljsa_poteza)
+                        #print('najboljsa poteza:', najboljsa_poteza)
 
                             #logging.debug("Minimax najboljsa_poteza = {0}".format(najboljsa_poteza))
                 else:
@@ -153,7 +149,7 @@ class Minimax():
                             vrednost_najboljse = vrednost
                             najboljsa_poteza = (i, j)
                             #logging.debug("Minimax najboljsa_poteza = {0}".format(najboljsa_poteza))
-                        print('najboljsa poteza:', najboljsa_poteza)
+                        #print('najboljsa poteza:', najboljsa_poteza)
 
                 assert (najboljsa_poteza is not None), "minimax: izračunana poteza je None \n" + str(vrednosti)
                 return (najboljsa_poteza, vrednost_najboljse)

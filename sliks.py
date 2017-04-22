@@ -270,7 +270,7 @@ if __name__ == "__main__":
     root = tkinter.Tk()
     root.title("SIX")
     root.resizable(width=False, height=False)
-    logging.basicConfig(level=logging.DEBUG)
+    #logging.basicConfig(level=logging.DEBUG)
     aplikacija = Gui(root)
     root.iconbitmap(os.path.join('ikona','matica.ico'))
     root.mainloop()
