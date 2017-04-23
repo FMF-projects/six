@@ -16,8 +16,6 @@ import minimax
 VISINA_TRIKOTNIKA = 3 ** (0.5) * (0.5) * logika_igre.STRANICA_SESTKOTNIKA
 STRANICA_SESTKOTNIKA = logika_igre.STRANICA_SESTKOTNIKA
 
-IGRALEC_1 = logika_igre.IGRALEC_1
-IGRALEC_2 = logika_igre.IGRALEC_2
 PRAZNO = logika_igre.PRAZNO
 
 NI_KONEC = logika_igre.NI_KONEC
@@ -56,6 +54,9 @@ class Gui():
         self.igralec_2 = None # Objekt, ki igra IGRALEC_2 (nastavimo ob začetku igre)
 
         self.zacni_igro(clovek.Clovek(self), clovek.Clovek(self))
+        
+        # Če uporabnik zapre okno naj se poklice self.zapri_okno
+        master.protocol("WM_DELETE_WINDOW", lambda: self.zapri_okno(master))
 
         # GLAVNI MENU
         glavni_menu = tkinter.Menu(master)
@@ -72,7 +73,7 @@ class Gui():
         glavni_menu.add_cascade(label="Barva", menu=barva_menu)
 
         # IZBIRE V PODMENUJIH
-        igra_menu.add_command(label="Nova igra", command=self.nova_igra)
+        igra_menu.add_command(label="Nova igra", command=lambda: self.zacni_igro(self.igralec_1, self.igralec_2))
         igra_menu.add_command(label="Človek - Človek", command=lambda: self.nacin_igre(0))
         igra_menu.add_command(label="Človek - Računalnik", command=lambda: self.nacin_igre(1))
         igra_menu.add_command(label="Računalnik - Človek", command=lambda: self.nacin_igre(2))
@@ -90,7 +91,7 @@ class Gui():
     ###########################################################################
     #                           IGRA                                          #
     ###########################################################################
-
+    
     def zacni_igro(self, igralec_1, igralec_2):
         """Nastavi stanje igre na zacetek igre.
            Za igralca uporabi dana igralca."""
@@ -107,11 +108,10 @@ class Gui():
     def nova_igra(self):
         '''počisti ploščo in nariše novo mrežo'''
         self.igra = logika_igre.Igra()
-        self.napis.set('Na potezi je {0}.'.format(self.izpis_igralca(IGRALEC_2)))
+        self.napis.set('Na potezi je {0}.'.format(self.izpis_igralca(logika_igre.IGRALEC_2)))
         self.plosca.delete('all')
         self.napolni_igralno_polje()
         self.igra.na_potezi = logika_igre.IGRALEC_2
-        # TODO za racunalnik
 
     def prekini_igralce(self):
         """Sporoči igralcem, da morajo nehati razmišljati."""
@@ -140,12 +140,12 @@ class Gui():
             (zmagovalec, zmagovalna_polja) = poteza
             if zmagovalec == NI_KONEC:
                 # poklicemo naslednjega igralca
-                if self.igra.na_potezi == IGRALEC_1:
+                if self.igra.na_potezi == logika_igre.IGRALEC_1:
                     self.igralec_1.igraj()
-                    self.napis.set('Na potezi je {0}.'.format(self.izpis_igralca(IGRALEC_1)))
+                    self.napis.set('Na potezi je {0}.'.format(self.izpis_igralca(logika_igre.IGRALEC_1)))
                 else:
                     self.igralec_2.igraj()
-                    self.napis.set('Na potezi je {0}.'.format(self.izpis_igralca(IGRALEC_2)))
+                    self.napis.set('Na potezi je {0}.'.format(self.izpis_igralca(logika_igre.IGRALEC_2)))
 
             else:
                 self.konec_igre(zmagovalec, zmagovalna_polja)
@@ -229,7 +229,7 @@ class Gui():
         '''spremeni barvo igralnih polj'''
         logika_igre.IGRALEC_1 = kombinacije_barv[kombinacija][0]
         logika_igre.IGRALEC_2 = kombinacije_barv[kombinacija][1]
-        self.nova_igra()
+        self.zacni_igro(self.igralec_1, self.igralec_2)
 
     def nacin_igre(self, nacin):
         '''nastavi igralce'''
@@ -263,10 +263,16 @@ class Gui():
         else:
             self.napis.set('Igra je neodločena.')
             
+    def zapri_okno(self, master):
+        '''Ta metoda se pokliče, ko uporabnik zapre aplikacijo.'''
+        self.prekini_igralce()
+        # Dejansko zapremo okno.
+        master.destroy()
+            
             
 
 
-if __name__ == "__main__":
+if __name__.endswith('__main__'):
     root = tkinter.Tk()
     root.title("SIX")
     root.resizable(width=False, height=False)
