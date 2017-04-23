@@ -253,7 +253,7 @@ class Gui():
     def konec_igre(self, zmagovalec, zmagovalna_polja):
         '''uvede ustrezne spremembe v oknu'''
         # igre je konec, imamo zmagovalca
-        if zmagovalec in [IGRALEC_1, IGRALEC_2]:
+        if zmagovalec in [logika_igre.IGRALEC_1, logika_igre.IGRALEC_2]:
             self.napis.set('Zmagal je {0}.'.format(self.izpis_igralca(zmagovalec)))
             for (i, j) in zmagovalna_polja:
                 id = self.koord_id[(i, j)]
