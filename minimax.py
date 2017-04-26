@@ -1,8 +1,9 @@
 import logika_igre
 
 import logging
+import random
 
-globina = 3
+globina = 4
 
 IGRALEC_1 = logika_igre.IGRALEC_1
 IGRALEC_2 = logika_igre.IGRALEC_2
@@ -34,7 +35,7 @@ class Minimax():
         return stevilo_polj
 
     # Vrednosti igre
-    ZMAGA = 100000
+    ZMAGA = 10^9
     NESKONCNO = 100 * ZMAGA
 
     def vrednost_pozicije(self):
@@ -45,16 +46,14 @@ class Minimax():
         vrednosti = {
             (6,0): Minimax.ZMAGA,
             (0,6): -Minimax.ZMAGA,
-            (5,0) : Minimax.ZMAGA//10,
-            (0,5) : -Minimax.ZMAGA//10,
-            (4,0) : Minimax.ZMAGA//100,
-            (0,4) : -Minimax.ZMAGA//100,
-            (3,0) : Minimax.ZMAGA//1000,
-            (0,3) : -Minimax.ZMAGA//1000,
-            (2,0) : Minimax.ZMAGA//10000,
-            (0,2) : -Minimax.ZMAGA//10000,
-            (1,0) : Minimax.ZMAGA//100000,
-            (0,1) : -Minimax.ZMAGA//100000
+            (5,0) : Minimax.ZMAGA//2,
+            (0,5) : -Minimax.ZMAGA//2,
+            (4,0) : Minimax.ZMAGA//50,
+            (0,4) : -Minimax.ZMAGA//50,
+            (3,0) : Minimax.ZMAGA//70000,
+            (0,3) : -Minimax.ZMAGA//70000,
+            (2,0) : Minimax.ZMAGA//5000000,
+            (0,2) : -Minimax.ZMAGA//5000000
             }
         vr_pozicije = 0
 
@@ -118,40 +117,67 @@ class Minimax():
                     # Maksimiziramo
                     najboljsa_poteza = None
                     vrednost_najboljse = -Minimax.NESKONCNO
-                    vrednosti = []
+                    vrednosti = {} #slovar, v katerem se kot ključ hrani trenutna najboljša vrednost pozicije,
+                                    # njena vrednost pa so poteze s to vrednostjo
                     for (i, j) in self.igra.veljavne_poteze():
                         #print(self.igra.veljavne_poteze())
                         #logging.debug("Minimax vrednost_najboljse = {0}".format(vrednost_najboljse))
                         self.igra.izvedi_potezo(i, j)
                         vrednost = self.minimax(globina-1, not maksimiziramo)[1]
-                        vrednosti.append(vrednost)
+                        vrednosti[vrednost] = [(i,j)]
                         logging.debug("Minimax vrednost = {0}, polje {1}".format(vrednost, (i,j)))
                         self.igra.razveljavi()
-                        if vrednost > vrednost_najboljse:
-                            vrednost_najboljse = vrednost
-                            najboljsa_poteza = (i, j)
-                        #print('najboljsa poteza:', najboljsa_poteza)
 
-                            #logging.debug("Minimax najboljsa_poteza = {0}".format(najboljsa_poteza))
+                        # če je položaj zelo dober, vrnemo kar to potezo
+                        if vrednost > 10^9:
+                            print((i,j), vrednost, 'zelo dobra')
+                            return ((i,j), vrednost)
+
+                        if vrednost > max(list(vrednosti.keys())):
+                            vrednosti = {}
+                            vrednosti[vrednost] = []
+                            vrednosti[vrednost].append((i, j))
+                        elif vrednost == list(vrednosti.keys())[0]:
+                            print(vrednosti)
+                            vrednosti[vrednost].append((i, j))
+
+                        najboljsa_poteza = random.choice(list(vrednosti.values()))[0]
+                        #print('najboljsa poteza:', najboljsa_poteza)
+                        #logging.debug("Minimax najboljsa_poteza = {0}".format(najboljsa_poteza))
                 else:
                     # Minimiziramo
                     najboljsa_poteza = None
                     vrednost_najboljse = Minimax.NESKONCNO
-                    vrednosti = []
+                    vrednosti = {}
                     for (i, j) in self.igra.veljavne_poteze():
                         #logging.debug("Minimax vrednost_najboljse = {0}".format(vrednost_najboljse))
                         self.igra.izvedi_potezo(i, j)
+
                         vrednost = self.minimax(globina-1, not maksimiziramo)[1]
-                        vrednosti.append(vrednost)
+                        vrednosti[vrednost] = [(i, j)]
+
                         logging.debug("Minimax vrednost = {0}, polje {1}".format(vrednost, (i, j)))
                         self.igra.razveljavi()
-                        if vrednost < vrednost_najboljse:
-                            vrednost_najboljse = vrednost
-                            najboljsa_poteza = (i, j)
-                            #logging.debug("Minimax najboljsa_poteza = {0}".format(najboljsa_poteza))
+
+                        # če je položaj zelo dober, vrnemo kar to potezo
+                        if vrednost < -10^9:
+                            print((i, j), vrednost, 'zelo dobra')
+                            return ((i, j), vrednost)
+
+                        if vrednost < min(list(vrednosti.keys())):
+                            vrednosti = {}
+                            vrednosti[vrednost] = []
+                            vrednosti[vrednost].append((i, j))
+                        elif vrednost == list(vrednosti.keys())[0]:
+                            print(vrednosti)
+                            vrednosti[vrednost].append((i, j))
+
+                        najboljsa_poteza = random.choice(list(vrednosti.values()))[0]
+                        #logging.debug("Minimax najboljsa_poteza = {0}".format(najboljsa_poteza))
                         #print('najboljsa poteza:', najboljsa_poteza)
 
                 assert (najboljsa_poteza is not None), "minimax: izračunana poteza je None \n" + str(vrednosti)
+                print(najboljsa_poteza, vrednost_najboljse)
                 return (najboljsa_poteza, vrednost_najboljse)
 
         else:
