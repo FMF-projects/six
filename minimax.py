@@ -3,7 +3,7 @@ import logika_igre
 import logging
 import random
 
-globina = 2
+globina = 3
 
 IGRALEC_1 = logika_igre.IGRALEC_1
 IGRALEC_2 = logika_igre.IGRALEC_2
@@ -91,11 +91,9 @@ class Minimax():
             self.poteza = poteza
 
     def minimax(self, globina, maksimiziramo):
+        '''Glavna metoda minimax.
+        Vrne par (poteza, vrednost), pri čemer je poteza sestavljena iz koordinat polja (i,j)'''
         #print("Minimax globina = {0}".format(globina))
-        """Glavna metoda minimax."""
-        # vrne par (poteza, vrednost), pri čemer je poteza
-        # sestavljena iz koordinat polja (i,j)
-
         if self.prekinitev == True:
             # Sporočili so nam, da moramo prekiniti
             logging.debug ("Minimax prekinja, globina = {0}".format(globina))
@@ -136,8 +134,8 @@ class Minimax():
                         self.igra.razveljavi()
 
                         # če je položaj zelo dober, vrnemo kar to potezo
-                        if vrednost > ZMAGA:
-                            print((i,j), vrednost, len(str(vrednost)), 'zelo dobra','+')
+                        if vrednost > ZMAGA and vrednost != 100000000000:
+                            print((i,j), vrednost, len(str(vrednost)), 'zelo dobra','+', 'globina:', globina)
                             return ((i,j), vrednost)
 
                         if vrednost > max(list(vrednosti.keys())):
@@ -147,7 +145,7 @@ class Minimax():
                         elif vrednost == list(vrednosti.keys())[0]:
                             #print(vrednosti)
                             vrednosti[vrednost].append((i, j))
-
+                        #print(vrednost, vrednosti)
                         najboljsa_poteza = random.choice(list(vrednosti.values()))[0]
                         #print('najboljsa poteza:', najboljsa_poteza)
                         #logging.debug("Minimax najboljsa_poteza = {0}".format(najboljsa_poteza))
@@ -167,8 +165,8 @@ class Minimax():
                         self.igra.razveljavi()
 
                         # če je položaj zelo dober, vrnemo kar to potezo
-                        if vrednost < -ZMAGA:
-                            print((i, j), vrednost, len(str(vrednost)), 'zelo dobra', '-')
+                        if vrednost < -ZMAGA and vrednost != -100000000000:
+                            print((i, j), vrednost, len(str(vrednost)), 'zelo dobra', '-', 'globina:', globina)
                             return ((i, j), vrednost)
 
                         if vrednost < min(list(vrednosti.keys())):
@@ -179,6 +177,7 @@ class Minimax():
                             #print(vrednosti)
                             vrednosti[vrednost].append((i, j))
 
+                        #print(vrednosti)
                         najboljsa_poteza = random.choice(list(vrednosti.values()))[0]
                         #logging.debug("Minimax najboljsa_poteza = {0}".format(najboljsa_poteza))
                         #print('najboljsa poteza:', najboljsa_poteza)
