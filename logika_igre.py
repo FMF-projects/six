@@ -68,7 +68,7 @@ class Igra():
     ##################
     
     def zmagovalni_vzorci(self, i, j):
-        '''vrne nastavke zmagovalnih vzorcev glede na sodost/lihost vrstice'''
+        '''vrne seznam zmagovalnih vzorcev glede na sodost/lihost vrstice'''
         # rožica
         rozica_liha = [(i, j), (i, j+1), (i+1, j+1), (i+2, j+1), (i+2, j), (i+1, j-1)]
         rozica_soda = [(i, j), (i, j+1), (i+1, j+2), (i+2, j+1), (i+2, j), (i+1, j)]
