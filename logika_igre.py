@@ -13,7 +13,7 @@ NI_KONEC = "ni konec"
 
 # VELIKOST IGRALNEGA POLJA
 STRANICA_SESTKOTNIKA = 20
-VELIKOST_MATRIKE = 15
+velikost_matrike = 15
 
 
 #######################################################
@@ -25,7 +25,7 @@ class Igra():
     def __init__(self):
 
         # SEZNAM ŠESTKOTNIKOV
-        self.igralno_polje = [[PRAZNO for j in range(VELIKOST_MATRIKE)] for i in range(VELIKOST_MATRIKE)]
+        self.igralno_polje = [[PRAZNO for j in range(velikost_matrike)] for i in range(velikost_matrike)]
 
         self.na_potezi = IGRALEC_2
 
@@ -54,8 +54,8 @@ class Igra():
     def veljavne_poteze(self):
         '''vrne seznam veljavnih potez'''
         poteze = set()
-        for i in range(VELIKOST_MATRIKE):
-            for j in range(VELIKOST_MATRIKE):
+        for i in range(velikost_matrike):
+            for j in range(velikost_matrike):
                 if self.igralno_polje[i][j] != PRAZNO:
                     for (x,y) in seznam_sosedov(i,j):
                         if self.igralno_polje[x][y] == PRAZNO:
@@ -113,7 +113,7 @@ class Igra():
         if self.veljavnost_poteze(i, j) == True:
             
             # shranimo igralno polje preden izvedemo potezo
-            kopija = [self.igralno_polje[i][:] for i in range(VELIKOST_MATRIKE)]
+            kopija = [self.igralno_polje[i][:] for i in range(velikost_matrike)]
             barva = self.na_potezi
             self.zgodovina.append((kopija, barva))
 
@@ -147,8 +147,8 @@ class Igra():
         # gledamo, ce je celotno polje polno, ce ni, bomo True spremenili v False
         je_polno = True 
 
-        for i in range(VELIKOST_MATRIKE):
-            for j in range(VELIKOST_MATRIKE):
+        for i in range(velikost_matrike):
+            for j in range(velikost_matrike):
 
                 polje = self.igralno_polje[i][j]
                 je_polno = je_polno and (polje != PRAZNO)
@@ -188,7 +188,7 @@ class Igra():
     def kopija(self):
         '''vrne kopijo igre'''
         k = Igra()
-        k.igralno_polje = [self.igralno_polje[i][:] for i in range(VELIKOST_MATRIKE)]
+        k.igralno_polje = [self.igralno_polje[i][:] for i in range(velikost_matrike)]
         k.na_potezi = self.na_potezi
         return k
 
@@ -198,7 +198,7 @@ class Igra():
 
 def veljavno_polje(x,y):
     '''Vrne True, če polje obstaja, sicer False'''
-    return (0 <= x < VELIKOST_MATRIKE and 0 <= y < VELIKOST_MATRIKE)
+    return (0 <= x < velikost_matrike and 0 <= y < velikost_matrike)
 
 def veljavna_sestka(lst):
     '''Vrne True, če so vsa polja v šestki veljavna'''

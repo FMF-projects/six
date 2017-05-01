@@ -185,7 +185,7 @@ class Gui():
         '''nariše igralno polje sestavljeno iz šestkotnikov'''
         a = STRANICA_SESTKOTNIKA
         v = VISINA_TRIKOTNIKA
-        velikost = logika_igre.VELIKOST_MATRIKE
+        velikost = logika_igre.velikost_matrike
         for i in range(velikost): # vrstica
             # preverimo sodost/lihost in tako določimo zamik prvega šestkotnika
             if i % 2 == 0: # lihe vrstice (ker začnemo šteti z 0)
@@ -209,7 +209,7 @@ class Gui():
 
     def pobarvaj_prvo_polje(self):
         '''pobarva prvo polje z barvo igralca 1 in spremembo zabeleži v logiko igre'''
-        i = logika_igre.VELIKOST_MATRIKE // 2
+        i = logika_igre.velikost_matrike // 2
         j = i
         barva = logika_igre.IGRALEC_1
         sredina = self.koord_id[(i,j)]
@@ -218,15 +218,15 @@ class Gui():
 
     def velikost_igralnega_polja(self):
         '''izracuna velikost igralnega polja'''
-        VELIKOST_MATRIKE = logika_igre.VELIKOST_MATRIKE
-        sirina = VISINA_TRIKOTNIKA * 2 * VELIKOST_MATRIKE + STRANICA_SESTKOTNIKA + 1
-        visina = 1.5 * STRANICA_SESTKOTNIKA * VELIKOST_MATRIKE + 0.5 * STRANICA_SESTKOTNIKA + 1
+        velikost_matrike = logika_igre.velikost_matrike
+        sirina = VISINA_TRIKOTNIKA * 2 * velikost_matrike + STRANICA_SESTKOTNIKA + 1
+        visina = 1.5 * STRANICA_SESTKOTNIKA * velikost_matrike + 0.5 * STRANICA_SESTKOTNIKA + 1
         return (sirina, visina)
 
     def spremeni_velikost_igralnega_polja(self, velikost):
         '''spremeni velikost igralnega polja'''
         self.prekini_igralce()
-        logika_igre.VELIKOST_MATRIKE = velikost
+        logika_igre.velikost_matrike = velikost
         (sirina, visina) = self.velikost_igralnega_polja()
         self.plosca.config(width=sirina, height=visina)
         self.zacni_igro(self.igralec_1, self.igralec_2)

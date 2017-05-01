@@ -3,7 +3,7 @@ import logika_igre
 import logging
 import random
 
-globina = 4
+globina = 2
 
 IGRALEC_1 = logika_igre.IGRALEC_1
 IGRALEC_2 = logika_igre.IGRALEC_2
@@ -14,7 +14,7 @@ NI_KONEC = logika_igre.NI_KONEC
 ZMAGA = 10**9
 NESKONCNO = 100 * ZMAGA
 
-VELIKOST_MATRIKE = logika_igre.VELIKOST_MATRIKE
+velikost_matrike = logika_igre.velikost_matrike
 
 class Alfabeta():
 
@@ -62,8 +62,8 @@ class Alfabeta():
             }
         vr_pozicije = 0
 
-        for i in range(VELIKOST_MATRIKE):
-            for j in range(VELIKOST_MATRIKE):
+        for i in range(velikost_matrike):
+            for j in range(velikost_matrike):
                 for vzorec in self.igra.zmagovalni_vzorci(i, j):
                     x1 = self.stevilo_polj_v_vzorcu(vzorec, self.igra.na_potezi)
                     x2 = self.stevilo_polj_v_vzorcu(vzorec, logika_igre.nasprotnik(self.igra.na_potezi))
@@ -108,36 +108,51 @@ class Alfabeta():
             if globina == 0:
                 return (None, self.vrednost_pozicije())
             if maksimiziramo:
+                najboljse_poteze = []
                 vrednost = -NESKONCNO
                 poteza = None
+
                 for (i,j) in self.igra.veljavne_poteze():
                     self.igra.izvedi_potezo(i, j)
                     pomozna_vr = self.alfabeta(globina-1, not maksimiziramo, alfa, beta)[1]
                     self.igra.razveljavi()
 
                     if pomozna_vr > vrednost:
+                        najboljse_poteze = [(i, j)]
                         vrednost = pomozna_vr
-                        poteza = (i, j)
+                    elif pomozna_vr == vrednost:
+                        najboljse_poteze.append((i, j))
+                        vrednost = pomozna_vr
 
                     alfa = max(alfa, vrednost)
-                    if beta < alfa:
+                    if beta <= alfa:
                         break
+
+                poteza = random.choice(najboljse_poteze)
                 assert (poteza is not None), "minimax: izračunana poteza je None"
                 return (poteza, vrednost)
             else:
+                najboljse_poteze = []
                 vrednost = NESKONCNO
+                poteza = None
+
                 for (i,j) in self.igra.veljavne_poteze():
                     self.igra.izvedi_potezo(i, j)
                     pomozna_vr = self.alfabeta(globina-1, not maksimiziramo, alfa, beta)[1]
                     self.igra.razveljavi()
 
                     if pomozna_vr < vrednost:
+                        najboljse_poteze = [(i, j)]
                         vrednost = pomozna_vr
-                        poteza = (i, j)
+                    elif pomozna_vr == vrednost:
+                        najboljse_poteze.append((i, j))
+                        vrednost = pomozna_vr
 
-                    beta = max(beta, vrednost)
-                    if beta < alfa:
+                    beta = min(beta, vrednost)
+                    if beta <= alfa:
                         break
+
+                poteza = random.choice(najboljse_poteze)
                 assert (poteza is not None), "minimax: izračunana poteza je None"
                 return (poteza, vrednost)
 
