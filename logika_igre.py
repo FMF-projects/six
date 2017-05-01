@@ -13,7 +13,7 @@ NI_KONEC = "ni konec"
 
 # VELIKOST IGRALNEGA POLJA
 STRANICA_SESTKOTNIKA = 20
-VELIKOST_MATRIKE = 10
+VELIKOST_MATRIKE = 15
 
 
 #######################################################

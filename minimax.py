@@ -46,8 +46,8 @@ class Minimax():
         k vrednosti trenutne pozicije za dolocenega igralca. Ce v nekem vzorcu nastopa
         vsaj eno polje nasprotnikove barve, to polje ne doprinese nicesar, sicer pa doloceno vrednost.'''
         vrednosti = {
-            (6,0): ZMAGA,
-            (0,6): -ZMAGA,
+            (6,0) : ZMAGA,
+            (0,6) : -ZMAGA,
             (5,0) : ZMAGA//2,
             (0,5) : -ZMAGA//2,
             (4,0) : ZMAGA//10,
@@ -132,7 +132,7 @@ class Minimax():
                         self.igra.razveljavi()
 
                         # če je položaj zelo dober, vrnemo kar to potezo
-                        if vrednost > ZMAGA and vrednost != 100000000000:
+                        if vrednost > ZMAGA: # and vrednost != 100000000000:
                             print((i,j), vrednost, len(str(vrednost)), 'zelo dobra','+', 'globina:', globina)
                             return ((i,j), vrednost)
 
@@ -168,7 +168,7 @@ class Minimax():
                         self.igra.razveljavi()
 
                         # če je položaj zelo dober, vrnemo kar to potezo
-                        if vrednost < -ZMAGA and vrednost != -100000000000:
+                        if vrednost < -ZMAGA: # and vrednost != -100000000000:
                             print((i, j), vrednost, len(str(vrednost)), 'zelo dobra', '-', 'globina:', globina)
                             return ((i, j), vrednost)
 

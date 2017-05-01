@@ -162,7 +162,12 @@ class Gui():
         n = event.y
         id = self.plosca.find_closest(m, n)[0]
         (i, j) = self.id_koord[id]
-        self.povleci_potezo(i, j)
+        if self.igra.na_potezi == logika_igre.IGRALEC_1:
+            self.igralec_1.klik(i, j)
+        elif self.igra.na_potezi == logika_igre.IGRALEC_2:
+            self.igralec_2.klik(i, j)
+        else:
+            pass
 
     def narisi_sestkotnik(self, x, y):
         a = STRANICA_SESTKOTNIKA
@@ -220,13 +225,15 @@ class Gui():
 
     def spremeni_velikost_igralnega_polja(self, velikost):
         '''spremeni velikost igralnega polja'''
+        self.prekini_igralce()
         logika_igre.VELIKOST_MATRIKE = velikost
         (sirina, visina) = self.velikost_igralnega_polja()
         self.plosca.config(width=sirina, height=visina)
-        self.nova_igra()
+        self.zacni_igro(self.igralec_1, self.igralec_2)
         
     def barva_igralnih_polj(self, kombinacija):
         '''spremeni barvo igralnih polj'''
+        self.prekini_igralce()
         logika_igre.IGRALEC_1 = kombinacije_barv[kombinacija][0]
         logika_igre.IGRALEC_2 = kombinacije_barv[kombinacija][1]
         self.zacni_igro(self.igralec_1, self.igralec_2)

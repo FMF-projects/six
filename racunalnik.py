@@ -54,6 +54,6 @@ class Racunalnik():
             self.mislec.join()
             self.mislec = None
 
-    def klik(self, p):
+    def klik(self, i, j):
         # Računalnik ignorira klike
         pass
