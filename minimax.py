@@ -3,7 +3,7 @@ import logika_igre
 import logging
 import random
 
-globina = 3
+globina = 2
 
 IGRALEC_1 = logika_igre.IGRALEC_1
 IGRALEC_2 = logika_igre.IGRALEC_2
@@ -39,10 +39,6 @@ class Minimax():
             elif self.igra.igralno_polje[i][j] == logika_igre.nasprotnik(barva):
                 return 0
         return stevilo_polj
-
-    # Vrednosti igre
-    ZMAGA = 10^9
-    NESKONCNO = 100 * ZMAGA
 
     def vrednost_pozicije(self):
         '''Smo v trenutnem stanju, torej sestkotniki so obarvani, kot pac so.
@@ -121,15 +117,17 @@ class Minimax():
                 if maksimiziramo:
                     # Maksimiziramo
                     najboljsa_poteza = None
-                    vrednost_najboljse = -NESKONCNO
-                    vrednosti = {} #slovar, v katerem se kot ključ hrani trenutna najboljša vrednost pozicije,
+                    #vrednost_najboljse = -NESKONCNO
+                    vrednosti = {-NESKONCNO:(0,0)} #slovar, v katerem se kot ključ hrani trenutna najboljša vrednost pozicije,
                                     # njena vrednost pa so poteze s to vrednostjo
                     for (i, j) in self.igra.veljavne_poteze():
                         #print(self.igra.veljavne_poteze())
                         #logging.debug("Minimax vrednost_najboljse = {0}".format(vrednost_najboljse))
                         self.igra.izvedi_potezo(i, j)
+
                         vrednost = self.minimax(globina-1, not maksimiziramo)[1]
-                        vrednosti[vrednost] = [(i,j)]
+                        #vrednosti[vrednost] = [(i,j)]
+
                         logging.debug("Minimax vrednost = {0}, polje {1}".format(vrednost, (i,j)))
                         self.igra.razveljavi()
 
@@ -139,27 +137,32 @@ class Minimax():
                             return ((i,j), vrednost)
 
                         if vrednost > max(list(vrednosti.keys())):
+                            #print(vrednosti, 'pred')
                             vrednosti = {}
+                            #print(vrednosti, 'po')
                             vrednosti[vrednost] = []
                             vrednosti[vrednost].append((i, j))
+                            #print(vrednosti, 'popo')
                         elif vrednost == list(vrednosti.keys())[0]:
-                            #print(vrednosti)
+                            print('vrednosti, ko je vr enaka [0]', vrednosti)
                             vrednosti[vrednost].append((i, j))
+
                         #print(vrednost, vrednosti)
-                        najboljsa_poteza = random.choice(list(vrednosti.values()))[0]
+                        najboljsa_poteza = random.choice(list(vrednosti.values())[0])
+                        vrednost_najboljse = list(vrednosti.keys())[0]
                         #print('najboljsa poteza:', najboljsa_poteza)
                         #logging.debug("Minimax najboljsa_poteza = {0}".format(najboljsa_poteza))
                 else:
                     # Minimiziramo
                     najboljsa_poteza = None
-                    vrednost_najboljse = NESKONCNO
-                    vrednosti = {}
+                    #vrednost_najboljse = NESKONCNO
+                    vrednosti = {NESKONCNO:(0,0)}
                     for (i, j) in self.igra.veljavne_poteze():
                         #logging.debug("Minimax vrednost_najboljse = {0}".format(vrednost_najboljse))
                         self.igra.izvedi_potezo(i, j)
 
                         vrednost = self.minimax(globina-1, not maksimiziramo)[1]
-                        vrednosti[vrednost] = [(i, j)]
+                        #vrednosti[vrednost] = [(i, j)]
 
                         logging.debug("Minimax vrednost = {0}, polje {1}".format(vrednost, (i, j)))
                         self.igra.razveljavi()
@@ -170,15 +173,20 @@ class Minimax():
                             return ((i, j), vrednost)
 
                         if vrednost < min(list(vrednosti.keys())):
+                            #print(vrednosti, 'pred')
                             vrednosti = {}
+                            #print(vrednosti, 'po')
                             vrednosti[vrednost] = []
                             vrednosti[vrednost].append((i, j))
+                            #print(vrednosti, 'popo')
                         elif vrednost == list(vrednosti.keys())[0]:
-                            #print(vrednosti)
+                            print('vrednosti, ko je vr enaka [0]', vrednosti)
                             vrednosti[vrednost].append((i, j))
 
                         #print(vrednosti)
-                        najboljsa_poteza = random.choice(list(vrednosti.values()))[0]
+                        najboljsa_poteza = random.choice(list(vrednosti.values())[0])
+                        print('list',list(vrednosti.values()), 'najboljsa',najboljsa_poteza)
+                        vrednost_najboljse = list(vrednosti.keys())[0]
                         #logging.debug("Minimax najboljsa_poteza = {0}".format(najboljsa_poteza))
                         #print('najboljsa poteza:', najboljsa_poteza)
 
