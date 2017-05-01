@@ -6,7 +6,7 @@ import os
 import logika_igre
 import clovek
 import racunalnik
-import minimax
+import alfabeta
 
 ###########################################################################
 #               KONSTANTE                                                 #
@@ -241,9 +241,9 @@ class Gui():
     def nacin_igre(self, nacin):
         '''nastavi igralce'''
         nacini_igre = [(clovek.Clovek(self), clovek.Clovek(self)),
-                (clovek.Clovek(self), racunalnik.Racunalnik(self, minimax.Minimax(minimax.globina))),
-                (racunalnik.Racunalnik(self, minimax.Minimax(minimax.globina)), clovek.Clovek(self)),
-                (racunalnik.Racunalnik(self, minimax.Minimax(minimax.globina)), racunalnik.Racunalnik(self, minimax.Minimax(minimax.globina)))]
+                (clovek.Clovek(self), racunalnik.Racunalnik(self, alfabeta.Alfabeta(alfabeta.globina))),
+                (racunalnik.Racunalnik(self, alfabeta.Alfabeta(alfabeta.globina)), clovek.Clovek(self)),
+                (racunalnik.Racunalnik(self, alfabeta.Alfabeta(alfabeta.globina)), racunalnik.Racunalnik(self, alfabeta.Alfabeta(alfabeta.globina)))]
                 
         (igralec_1, igralec_2) = nacini_igre[nacin]
         self.zacni_igro(igralec_1, igralec_2)
