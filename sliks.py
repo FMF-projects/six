@@ -12,9 +12,10 @@ import alfabeta
 #               KONSTANTE                                                 #
 ###########################################################################
 
+STRANICA_SESTKOTNIKA = 20
 # visina trikotnikov v sestkotniku
-VISINA_TRIKOTNIKA = 3 ** (0.5) * (0.5) * logika_igre.STRANICA_SESTKOTNIKA
-STRANICA_SESTKOTNIKA = logika_igre.STRANICA_SESTKOTNIKA
+VISINA_TRIKOTNIKA = 3 ** (0.5) * (0.5) * STRANICA_SESTKOTNIKA
+
 
 PRAZNO = logika_igre.PRAZNO
 
@@ -88,9 +89,9 @@ class Gui():
         barva_menu.add_command(label="modra-zelena", command=lambda: self.barva_igralnih_polj(2))
 
 
-    ###########################################################################
-    #                           IGRA                                          #
-    ###########################################################################
+    ##################################
+    #             IGRA               #
+    ##################################
     
     def zacni_igro(self, igralec_1, igralec_2):
         """Nastavi stanje igre na zacetek igre.
@@ -108,10 +109,10 @@ class Gui():
     def nova_igra(self):
         '''počisti ploščo in nariše novo mrežo'''
         self.igra = logika_igre.Igra()
-        self.napis.set('Na potezi je {0}.'.format(self.izpis_igralca(logika_igre.IGRALEC_2)))
+        self.napis.set('Na potezi je {0}.'.format(self.izpis_igralca(logika_igre.drugi)))
         self.plosca.delete('all')
         self.napolni_igralno_polje()
-        self.igra.na_potezi = logika_igre.IGRALEC_2
+        self.igra.na_potezi = logika_igre.drugi
 
     def prekini_igralce(self):
         """Sporoči igralcem, da morajo nehati razmišljati."""
@@ -140,31 +141,31 @@ class Gui():
             (zmagovalec, zmagovalna_polja) = poteza
             if zmagovalec == NI_KONEC:
                 # poklicemo naslednjega igralca
-                if self.igra.na_potezi == logika_igre.IGRALEC_1:
+                if self.igra.na_potezi == logika_igre.prvi:
                     self.igralec_1.igraj()
-                    self.napis.set('Na potezi je {0}.'.format(self.izpis_igralca(logika_igre.IGRALEC_1)))
+                    self.napis.set('Na potezi je {0}.'.format(self.izpis_igralca(logika_igre.prvi)))
                 else:
                     self.igralec_2.igraj()
-                    self.napis.set('Na potezi je {0}.'.format(self.izpis_igralca(logika_igre.IGRALEC_2)))
+                    self.napis.set('Na potezi je {0}.'.format(self.izpis_igralca(logika_igre.drugi)))
 
             else:
                 self.konec_igre(zmagovalec, zmagovalna_polja)
                 self.prekini_igralce()
                 self.igra.na_potezi = None            
         
-    ###########################################################################
-    #                  OSTALE FUNKCIJE                                        #
-    ###########################################################################
+    ###########################################
+    #          OSTALE FUNKCIJE                #
+    ###########################################
 
     def plosca_klik(self, event):
-        '''določi koordinate klika in pokliče potezo'''
+        '''določi koordinate klika in pokliče ustreznega igralca'''
         m = event.x
         n = event.y
         id = self.plosca.find_closest(m, n)[0]
         (i, j) = self.id_koord[id]
-        if self.igra.na_potezi == logika_igre.IGRALEC_1:
+        if self.igra.na_potezi == logika_igre.prvi:
             self.igralec_1.klik(i, j)
-        elif self.igra.na_potezi == logika_igre.IGRALEC_2:
+        elif self.igra.na_potezi == logika_igre.drugi:
             self.igralec_2.klik(i, j)
         else:
             pass
@@ -211,7 +212,7 @@ class Gui():
         '''pobarva prvo polje z barvo igralca 1 in spremembo zabeleži v logiko igre'''
         i = logika_igre.velikost_matrike // 2
         j = i
-        barva = logika_igre.IGRALEC_1
+        barva = logika_igre.prvi
         sredina = self.koord_id[(i,j)]
         self.plosca.itemconfig(sredina, fill=barva)
         self.igra.zabelezi_spremembo_barve(i, j, barva)
@@ -234,8 +235,8 @@ class Gui():
     def barva_igralnih_polj(self, kombinacija):
         '''spremeni barvo igralnih polj'''
         self.prekini_igralce()
-        logika_igre.IGRALEC_1 = kombinacije_barv[kombinacija][0]
-        logika_igre.IGRALEC_2 = kombinacije_barv[kombinacija][1]
+        logika_igre.prvi = kombinacije_barv[kombinacija][0]
+        logika_igre.drugi = kombinacije_barv[kombinacija][1]
         self.zacni_igro(self.igralec_1, self.igralec_2)
 
     def nacin_igre(self, nacin):
@@ -260,7 +261,7 @@ class Gui():
     def konec_igre(self, zmagovalec, zmagovalna_polja):
         '''uvede ustrezne spremembe v oknu'''
         # igre je konec, imamo zmagovalca
-        if zmagovalec in [logika_igre.IGRALEC_1, logika_igre.IGRALEC_2]:
+        if zmagovalec in [logika_igre.prvi, logika_igre.drugi]:
             self.napis.set('Zmagal je {0}.'.format(self.izpis_igralca(zmagovalec)))
             for (i, j) in zmagovalna_polja:
                 id = self.koord_id[(i, j)]

@@ -5,8 +5,6 @@ import random
 
 globina = 2
 
-IGRALEC_1 = logika_igre.IGRALEC_1
-IGRALEC_2 = logika_igre.IGRALEC_2
 NEODLOCENO = logika_igre.NEODLOCENO
 NI_KONEC = logika_igre.NI_KONEC
 
@@ -48,10 +46,10 @@ class Alfabeta():
         vrednosti = {
             (6,0) : ZMAGA,
             (0,6) : -ZMAGA,
-            (5,0) : ZMAGA//2,
-            (0,5) : -ZMAGA//2,
-            (4,0) : ZMAGA//10,
-            (0,4) : -ZMAGA//10,
+            (5,0) : ZMAGA//10,
+            (0,5) : -ZMAGA//10,
+            (4,0) : ZMAGA//100,
+            (0,4) : -ZMAGA//100,
             (3,0) : ZMAGA//50000,
             (0,3) : -ZMAGA//50000,
             (2,0) : ZMAGA//5000000,
@@ -77,7 +75,7 @@ class Alfabeta():
         self.prekinitev = False # Glavno vlakno bo to nastavilo na True, če moramo nehati
         self.jaz = self.igra.na_potezi
         self.poteza = None # Sem napišemo potezo, ko jo najdemo
-        # Poženemo minimax
+        # Poženemo alfabeta
         (poteza, vrednost) = self.alfabeta(self.globina, True)
         self.jaz = None
         self.igra = None
@@ -87,14 +85,15 @@ class Alfabeta():
             self.poteza = poteza
 
     def alfabeta(self, globina, maksimiziramo, alfa=-NESKONCNO, beta=NESKONCNO):
-
+        '''vrne (poteza, vrednost)'''
+        
         if self.prekinitev == True:
             # Sporočili so nam, da moramo prekiniti
             return (None, 0)
 
         (zmagovalec, zmagovalna_polja) = self.igra.stanje_igre()
 
-        if zmagovalec in (IGRALEC_1, IGRALEC_2, NEODLOCENO):
+        if zmagovalec in (logika_igre.prvi, logika_igre.drugi, NEODLOCENO):
             # Igre je konec, vrnemo njeno vrednost
             if zmagovalec == self.jaz:
                 return (None, ZMAGA)
@@ -105,18 +104,21 @@ class Alfabeta():
 
         elif zmagovalec == NI_KONEC:
             # Igre ni konec
+            
+            # prispeli smo do željene globine, pogledamo vrednost igre
             if globina == 0:
                 return (None, self.vrednost_pozicije())
+            
+            # naredimo eno stopnjo alfabeta
             if maksimiziramo:
                 najboljse_poteze = []
                 vrednost = -NESKONCNO
                 poteza = None
-
                 for (i,j) in self.igra.veljavne_poteze():
                     self.igra.izvedi_potezo(i, j)
                     pomozna_vr = self.alfabeta(globina-1, not maksimiziramo, alfa, beta)[1]
                     self.igra.razveljavi()
-
+                    
                     if pomozna_vr > vrednost:
                         najboljse_poteze = [(i, j)]
                         vrednost = pomozna_vr
@@ -125,22 +127,23 @@ class Alfabeta():
                         vrednost = pomozna_vr
 
                     alfa = max(alfa, vrednost)
-                    if beta <= alfa:
+                    if beta < alfa:
                         break
 
                 poteza = random.choice(najboljse_poteze)
-                assert (poteza is not None), "minimax: izračunana poteza je None"
+                assert (poteza is not None), "alfabeta: izračunana poteza je None"
                 return (poteza, vrednost)
+            
+            # minimiziramo
             else:
                 najboljse_poteze = []
                 vrednost = NESKONCNO
                 poteza = None
-
                 for (i,j) in self.igra.veljavne_poteze():
                     self.igra.izvedi_potezo(i, j)
                     pomozna_vr = self.alfabeta(globina-1, not maksimiziramo, alfa, beta)[1]
                     self.igra.razveljavi()
-
+                    
                     if pomozna_vr < vrednost:
                         najboljse_poteze = [(i, j)]
                         vrednost = pomozna_vr
@@ -149,13 +152,13 @@ class Alfabeta():
                         vrednost = pomozna_vr
 
                     beta = min(beta, vrednost)
-                    if beta <= alfa:
+                    if beta < alfa:
                         break
 
                 poteza = random.choice(najboljse_poteze)
-                assert (poteza is not None), "minimax: izračunana poteza je None"
+                assert (poteza is not None), "alfabeta: izračunana poteza je None"
                 return (poteza, vrednost)
 
         else:
-            assert False, "minimax: nedefinirano stanje igre"
+            assert False, "alfabeta: nedefinirano stanje igre"
 

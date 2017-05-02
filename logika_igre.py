@@ -4,17 +4,15 @@ import logging
 #                      PARAMETRI                      #
 #######################################################
 
-IGRALEC_1 = 'red'
-IGRALEC_2 = 'blue'
 PRAZNO = ''
-
 NEODLOCENO = "neodločeno"
 NI_KONEC = "ni konec"
 
 # VELIKOST IGRALNEGA POLJA
-STRANICA_SESTKOTNIKA = 20
 velikost_matrike = 15
 
+prvi = 'red'
+drugi = 'blue'
 
 #######################################################
 #                        IGRA                         #
@@ -27,7 +25,7 @@ class Igra():
         # SEZNAM ŠESTKOTNIKOV
         self.igralno_polje = [[PRAZNO for j in range(velikost_matrike)] for i in range(velikost_matrike)]
 
-        self.na_potezi = IGRALEC_2
+        self.na_potezi = drugi
 
         self.zgodovina = []
         
@@ -217,9 +215,9 @@ def seznam_sosedov(i, j):
 
 def nasprotnik(igralec):
     """Vrne nasprotnika od igralca."""
-    if igralec == IGRALEC_1:
-        return IGRALEC_2
-    elif igralec == IGRALEC_2:
-        return IGRALEC_1
+    if igralec == prvi:
+        return drugi
+    elif igralec == drugi:
+        return prvi
     else:
         assert False, "neveljaven nasprotnik"
