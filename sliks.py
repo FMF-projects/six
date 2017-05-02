@@ -78,19 +78,27 @@ class Gui():
         igra_menu = tkinter.Menu(glavni_menu, tearoff=0)
         glavni_menu.add_cascade(label="Igra", menu=igra_menu)
 
+        nacini_menu = tkinter.Menu(glavni_menu, tearoff=0)
+        glavni_menu.add_cascade(label="Nastavitve igre", menu=nacini_menu)
+
         velikost_menu = tkinter.Menu(glavni_menu, tearoff=0)
         glavni_menu.add_cascade(label="Velikost polja", menu=velikost_menu)
         
         barva_menu = tkinter.Menu(glavni_menu, tearoff=0)
         glavni_menu.add_cascade(label="Barva", menu=barva_menu)
 
+        pomoc_menu = tkinter.Menu(glavni_menu, tearoff=0)
+        glavni_menu.add_cascade(label="Pomoč", menu=pomoc_menu)
+
+
         # IZBIRE V PODMENUJIH        
         igra_menu.add_command(label="Nova igra", command=lambda: self.zacni_igro())
+        igra_menu.add_command(label="Pravila in navodila", command=lambda: self.odpri_navodila())
 
-        igra_menu.add_radiobutton(label="Človek - Človek", variable=self.nacin_igre, value=0, command=lambda: self.zacni_igro())
-        igra_menu.add_radiobutton(label="Človek - Računalnik", variable=self.nacin_igre, value=1, command=lambda: self.zacni_igro())
-        igra_menu.add_radiobutton(label="Računalnik - Človek", variable=self.nacin_igre, value=2, command=lambda: self.zacni_igro())
-        igra_menu.add_radiobutton(label="Računalnik - Računalnik", variable=self.nacin_igre, value=3, command=lambda: self.zacni_igro())
+        nacini_menu.add_radiobutton(label="Človek - Človek", variable=self.nacin_igre, value=0, command=lambda: self.zacni_igro())
+        nacini_menu.add_radiobutton(label="Človek - Računalnik", variable=self.nacin_igre, value=1, command=lambda: self.zacni_igro())
+        nacini_menu.add_radiobutton(label="Računalnik - Človek", variable=self.nacin_igre, value=2, command=lambda: self.zacni_igro())
+        nacini_menu.add_radiobutton(label="Računalnik - Računalnik", variable=self.nacin_igre, value=3, command=lambda: self.zacni_igro())
         
         velikost_menu.add_radiobutton(label="10x10", variable=self.velikost_matrike, value=10, command=lambda: self.zacni_igro())
         velikost_menu.add_radiobutton(label="15x15", variable=self.velikost_matrike, value=15, command=lambda: self.zacni_igro())
@@ -99,7 +107,8 @@ class Gui():
         barva_menu.add_radiobutton(label="rdeča-modra", variable=self.barva, value=0, command=lambda: self.zacni_igro())
         barva_menu.add_radiobutton(label="rdeča-zelena", variable=self.barva, value=1, command=lambda: self.zacni_igro())
         barva_menu.add_radiobutton(label="modra-zelena", variable=self.barva, value=2, command=lambda: self.zacni_igro())
-        
+       
+        pomoc_menu.add_command(label="Uporaba konzole", command=lambda: self.odpri_pomoc())
 
     ##################################
     #             IGRA               #
@@ -291,6 +300,31 @@ class Gui():
         self.prekini_igralce()
         # Dejansko zapremo okno.
         master.destroy()
+        
+    ###########################################
+    #          POMOČ UPORABNIKU               #
+    ###########################################
+
+    def odpri_navodila(self):
+        '''odpre okno z navodili za igro'''
+        pomoc_igra = tkinter.Tk()
+        pomoc_igra.title("Pravila in navodila")
+        pomoc_igra.resizable(width=False, height=False)
+
+        navodila = tkinter.Text(pomoc_igra)
+        navodila.grid(row=0, column=0)
+        navodila.insert(0.1, 'Pozdravljeni! \n \n')
+        navodila.insert(3.1, 'V igri SIX morate za zmago tvoriti enega od naslednjih vzorcev:')
+        
+        navodila.config(state='disabled')
+
+        
+
+    def odpri_pomoc(self):
+        '''odpre okno z informacijami o konzoli'''
+        pomoc_konzola = tkinter.Tk()
+        pomoc_konzola.title("Pomoč")
+        pomoc_konzola.resizable(width=False, height=False)
             
             
 
