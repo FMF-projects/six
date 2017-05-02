@@ -12,8 +12,6 @@ NI_KONEC = logika_igre.NI_KONEC
 ZMAGA = 10**9
 NESKONCNO = 100 * ZMAGA
 
-velikost_matrike = logika_igre.velikost_matrike
-
 class Alfabeta():
 
     def __init__(self, globina):
@@ -60,8 +58,8 @@ class Alfabeta():
             }
         vr_pozicije = 0
 
-        for i in range(velikost_matrike):
-            for j in range(velikost_matrike):
+        for i in range(logika_igre.velikost_matrike):
+            for j in range(logika_igre.velikost_matrike):
                 for vzorec in self.igra.zmagovalni_vzorci(i, j):
                     x1 = self.stevilo_polj_v_vzorcu(vzorec, self.igra.na_potezi)
                     x2 = self.stevilo_polj_v_vzorcu(vzorec, logika_igre.nasprotnik(self.igra.na_potezi))

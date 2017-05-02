@@ -22,7 +22,10 @@ PRAZNO = logika_igre.PRAZNO
 NI_KONEC = logika_igre.NI_KONEC
 NEODLOCENO = logika_igre.NEODLOCENO
 
-kombinacije_barv = [('red','blue'), ('red', 'green'), ('blue','green')]
+# možne barvne kombinacije igralnih polj
+# v primeru dodajanja novih je potrebno dopolniti še funkcijo izpis_igralca
+# ter izbire v menuju barva_menu
+kombinacije_barv = [('red', 'blue'), ('red', 'green'), ('blue', 'green')]
 
 ###########################################################################
 #               GUI                                                       #
@@ -33,8 +36,7 @@ class Gui():
     def __init__(self, master):
 
         # PLOSCA
-        self.plosca = tkinter.Canvas(master, width=self.velikost_igralnega_polja()[0]
-                                     , height=self.velikost_igralnega_polja()[1])
+        self.plosca = tkinter.Canvas(master)
         self.plosca.grid(row=1, column=0)
 
         self.plosca.bind("<Button-1>", self.plosca_klik)
@@ -54,8 +56,17 @@ class Gui():
         self.igralec_1 = None # Objekt, ki igra IGRALEC_1 (nastavimo ob začetku igre)
         self.igralec_2 = None # Objekt, ki igra IGRALEC_2 (nastavimo ob začetku igre)
 
-        self.zacni_igro(clovek.Clovek(self), clovek.Clovek(self))
+        # najprej nastavimo nastavitve za igro
+        # igro zacnemo v barvni kombinaciji rdeca-modra (izbira 0)
+        self.barva = tkinter.IntVar(value=0)
+        # na polju velikosti 15x15
+        self.velikost_matrike = tkinter.IntVar(value=15)
+        # v nacinu clovek-clovek (izbira 0)
+        self.nacin_igre = tkinter.IntVar(value=0)
+        # zacnemo igro
+        self.zacni_igro()
         
+        # ZAPIRANJE OKNA
         # Če uporabnik zapre okno naj se poklice self.zapri_okno
         master.protocol("WM_DELETE_WINDOW", lambda: self.zapri_okno(master))
 
@@ -73,46 +84,51 @@ class Gui():
         barva_menu = tkinter.Menu(glavni_menu, tearoff=0)
         glavni_menu.add_cascade(label="Barva", menu=barva_menu)
 
-        # IZBIRE V PODMENUJIH
-        igra_menu.add_command(label="Nova igra", command=lambda: self.zacni_igro(self.igralec_1, self.igralec_2))
-        igra_menu.add_command(label="Človek - Človek", command=lambda: self.nacin_igre(0))
-        igra_menu.add_command(label="Človek - Računalnik", command=lambda: self.nacin_igre(1))
-        igra_menu.add_command(label="Računalnik - Človek", command=lambda: self.nacin_igre(2))
-        igra_menu.add_command(label="Računalnik - Računalnik", command=lambda: self.nacin_igre(3))
+        # IZBIRE V PODMENUJIH        
+        igra_menu.add_command(label="Nova igra", command=lambda: self.zacni_igro())
+
+        igra_menu.add_radiobutton(label="Človek - Človek", variable=self.nacin_igre, value=0, command=lambda: self.zacni_igro())
+        igra_menu.add_radiobutton(label="Človek - Računalnik", variable=self.nacin_igre, value=1, command=lambda: self.zacni_igro())
+        igra_menu.add_radiobutton(label="Računalnik - Človek", variable=self.nacin_igre, value=2, command=lambda: self.zacni_igro())
+        igra_menu.add_radiobutton(label="Računalnik - Računalnik", variable=self.nacin_igre, value=3, command=lambda: self.zacni_igro())
         
-        velikost_menu.add_command(label="10x10", command=lambda: self.spremeni_velikost_igralnega_polja(10))
-        velikost_menu.add_command(label="15x15", command=lambda: self.spremeni_velikost_igralnega_polja(15))
-        velikost_menu.add_command(label="20x20", command=lambda: self.spremeni_velikost_igralnega_polja(20))
+        velikost_menu.add_radiobutton(label="10x10", variable=self.velikost_matrike, value=10, command=lambda: self.zacni_igro())
+        velikost_menu.add_radiobutton(label="15x15", variable=self.velikost_matrike, value=15, command=lambda: self.zacni_igro())
+        velikost_menu.add_radiobutton(label="20x20", variable=self.velikost_matrike, value=20, command=lambda: self.zacni_igro())
 
-        barva_menu.add_command(label="rdeča-modra", command=lambda: self.barva_igralnih_polj(0))
-        barva_menu.add_command(label="rdeča-zelena", command=lambda: self.barva_igralnih_polj(1))
-        barva_menu.add_command(label="modra-zelena", command=lambda: self.barva_igralnih_polj(2))
-
+        barva_menu.add_radiobutton(label="rdeča-modra", variable=self.barva, value=0, command=lambda: self.zacni_igro())
+        barva_menu.add_radiobutton(label="rdeča-zelena", variable=self.barva, value=1, command=lambda: self.zacni_igro())
+        barva_menu.add_radiobutton(label="modra-zelena", variable=self.barva, value=2, command=lambda: self.zacni_igro())
+        
 
     ##################################
     #             IGRA               #
     ##################################
     
-    def zacni_igro(self, igralec_1, igralec_2):
-        """Nastavi stanje igre na zacetek igre.
-           Za igralca uporabi dana igralca."""
-        # Ustavimo vsa vlakna, ki trenutno razmišljajo
+    def zacni_igro(self):
+        '''Nastavi stanje igre na zacetek igre'''
+        # Ustavimo vsa vlakna, ki trenutno razmišljajo in pocistimo plosco
         self.prekini_igralce()
-        self.nova_igra()
-        # Shranimo igralce
-        self.igralec_1 = igralec_1
-        self.igralec_2 = igralec_2
+        self.plosca.delete('all')
+        
+        # nastavimo barvo
+        self.nastavi_barvo_igralnih_polj()
+        # nastavimo velikost
+        self.nastavi_velikost_igralnega_polja()
+        # shranimo igralce
+        self.nastavi_nacin_igre()
+
+        # ustvarimo novo igro
+        self.igra = logika_igre.Igra()
+
+        # nastavimo stvari vidne uporabniku
+        self.napis.set('Na potezi je {0}.'.format(self.izpis_igralca(logika_igre.drugi)))
+        self.napolni_igralno_polje()
+        
         # prvi na potezi je igralec 2, saj je prvo polje že pobarvano
         # z barvo igralca 1
-        self.igralec_2.igraj()
-
-    def nova_igra(self):
-        '''počisti ploščo in nariše novo mrežo'''
-        self.igra = logika_igre.Igra()
-        self.napis.set('Na potezi je {0}.'.format(self.izpis_igralca(logika_igre.drugi)))
-        self.plosca.delete('all')
-        self.napolni_igralno_polje()
         self.igra.na_potezi = logika_igre.drugi
+        self.igralec_2.igraj()      
 
     def prekini_igralce(self):
         """Sporoči igralcem, da morajo nehati razmišljati."""
@@ -152,7 +168,38 @@ class Gui():
                 self.konec_igre(zmagovalec, zmagovalna_polja)
                 self.prekini_igralce()
                 self.igra.na_potezi = None            
+
+    ###########################################
+    #          NASTAVITVE IGRE                #
+    ###########################################        
+
+    def nastavi_velikost_igralnega_polja(self):
+        '''nastavi velikost igralnega polja'''
+        velikost_matrike = self.velikost_matrike.get()
+        # nastavimo velikost v logiki_igre
+        logika_igre.velikost_matrike = velikost_matrike
+        # izracunamo sirino in visino
+        sirina = VISINA_TRIKOTNIKA * 2 * velikost_matrike + STRANICA_SESTKOTNIKA + 1
+        visina = 1.5 * STRANICA_SESTKOTNIKA * velikost_matrike + 0.5 * STRANICA_SESTKOTNIKA + 1
+        self.plosca.config(width=sirina, height=visina)
         
+    def nastavi_barvo_igralnih_polj(self):
+        '''nastavi barvo igralnih polj'''
+        kombinacija = self.barva.get()
+        logika_igre.prvi = kombinacije_barv[kombinacija][0]
+        logika_igre.drugi = kombinacije_barv[kombinacija][1]
+
+    def nastavi_nacin_igre(self):
+        '''nastavi igralce'''
+        nacini_igre = [(clovek.Clovek(self), clovek.Clovek(self)),
+                (clovek.Clovek(self), racunalnik.Racunalnik(self, alfabeta.Alfabeta(alfabeta.globina))),
+                (racunalnik.Racunalnik(self, alfabeta.Alfabeta(alfabeta.globina)), clovek.Clovek(self)),
+                (racunalnik.Racunalnik(self, alfabeta.Alfabeta(alfabeta.globina)), racunalnik.Racunalnik(self, alfabeta.Alfabeta(alfabeta.globina)))]
+        nacin = self.nacin_igre.get()      
+        self.igralec_1 = nacini_igre[nacin][0]
+        self.igralec_2 = nacini_igre[nacin][1]
+        
+
     ###########################################
     #          OSTALE FUNKCIJE                #
     ###########################################
@@ -216,38 +263,6 @@ class Gui():
         sredina = self.koord_id[(i,j)]
         self.plosca.itemconfig(sredina, fill=barva)
         self.igra.zabelezi_spremembo_barve(i, j, barva)
-
-    def velikost_igralnega_polja(self):
-        '''izracuna velikost igralnega polja'''
-        velikost_matrike = logika_igre.velikost_matrike
-        sirina = VISINA_TRIKOTNIKA * 2 * velikost_matrike + STRANICA_SESTKOTNIKA + 1
-        visina = 1.5 * STRANICA_SESTKOTNIKA * velikost_matrike + 0.5 * STRANICA_SESTKOTNIKA + 1
-        return (sirina, visina)
-
-    def spremeni_velikost_igralnega_polja(self, velikost):
-        '''spremeni velikost igralnega polja'''
-        self.prekini_igralce()
-        logika_igre.velikost_matrike = velikost
-        (sirina, visina) = self.velikost_igralnega_polja()
-        self.plosca.config(width=sirina, height=visina)
-        self.zacni_igro(self.igralec_1, self.igralec_2)
-        
-    def barva_igralnih_polj(self, kombinacija):
-        '''spremeni barvo igralnih polj'''
-        self.prekini_igralce()
-        logika_igre.prvi = kombinacije_barv[kombinacija][0]
-        logika_igre.drugi = kombinacije_barv[kombinacija][1]
-        self.zacni_igro(self.igralec_1, self.igralec_2)
-
-    def nacin_igre(self, nacin):
-        '''nastavi igralce'''
-        nacini_igre = [(clovek.Clovek(self), clovek.Clovek(self)),
-                (clovek.Clovek(self), racunalnik.Racunalnik(self, alfabeta.Alfabeta(alfabeta.globina))),
-                (racunalnik.Racunalnik(self, alfabeta.Alfabeta(alfabeta.globina)), clovek.Clovek(self)),
-                (racunalnik.Racunalnik(self, alfabeta.Alfabeta(alfabeta.globina)), racunalnik.Racunalnik(self, alfabeta.Alfabeta(alfabeta.globina)))]
-                
-        (igralec_1, igralec_2) = nacini_igre[nacin]
-        self.zacni_igro(igralec_1, igralec_2)
 
     def izpis_igralca(self, igralec):
         '''pravilno sklanja ime igralca, za izpis uporabniku'''

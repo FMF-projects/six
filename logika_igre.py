@@ -9,10 +9,13 @@ NEODLOCENO = "neodločeno"
 NI_KONEC = "ni konec"
 
 # VELIKOST IGRALNEGA POLJA
-velikost_matrike = 15
+# nastavi gui ob začetku igre glede na željeno izbiro
+velikost_matrike = None
 
-prvi = 'red'
-drugi = 'blue'
+# barva igralca_1 in igralca_2
+# nastavi gui ob začetku igre, glede na izbrano barvno kombinacijo
+prvi = None
+drugi = None
 
 #######################################################
 #                        IGRA                         #
