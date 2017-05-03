@@ -69,7 +69,7 @@ class Igra():
     ##################
     
     def zmagovalni_vzorci(self, i, j):
-        '''vrne seznam zmagovalnih vzorcev glede na sodost/lihost vrstice'''
+        '''vrne slovar zmagovalnih vzorcev glede na sodost/lihost vrstice'''
         # rožica
         rozica_liha = [(i, j), (i, j+1), (i+1, j+1), (i+2, j+1), (i+2, j), (i+1, j-1)]
         rozica_soda = [(i, j), (i, j+1), (i+1, j+2), (i+2, j+1), (i+2, j), (i+1, j)]
@@ -101,7 +101,11 @@ class Igra():
                         padajoca_crta_soda, trikotnik_sod, trikotnik_na_glavo_sod]
         
         # vrnemo le tiste vzorce, ki v katerih so vsa polja veljavna (obstajajo)
-        return [k for k in kandidati if veljavna_sestka(k)]
+        veljavni_kandidati = {}
+        for vzorec in kandidati:
+            if veljavna_sestka(vzorec):
+                veljavni_kandidati[str(vzorec)] = vzorec  
+        return veljavni_kandidati
     
     def zabelezi_spremembo_barve(self, i, j, barva):
         '''na (i,j) mesto v igralnem polju zapiše barvo'''
@@ -156,11 +160,12 @@ class Igra():
 
                 if polje != PRAZNO:
                     # pregledamo vzorce za to polje
-                    for vzorec in self.zmagovalni_vzorci(i, j):
+                    zmagovalni_vzorci = self.zmagovalni_vzorci(i, j)
+                    for vzorec in zmagovalni_vzorci :
                         stevilo_polj_iste_barve = 0
                         # shranimo si koordinate polj, ki tvorijo zmagovalni vzorec
                         zmagovalna_polja = []
-                        for (x, y) in vzorec:
+                        for (x, y) in zmagovalni_vzorci[vzorec]:
                             if self.igralno_polje[x][y] == polje:
                                 stevilo_polj_iste_barve += 1
                                 zmagovalna_polja.append((x,y))
@@ -216,22 +221,31 @@ def seznam_sosedov(i, j):
         kandidati = [(i-1, j), (i, j-1), (i+1, j), (i+1, j+1), (i, j+1), (i-1, j+1)]
     return [(i,j) for (i,j) in kandidati if veljavno_polje(i,j)]
         
-def mozna_zmagovalna_polja(i, j):
-    '''vrne vsa polja, s pomočjo katerih bi (i,j) lahko tvoril zmagovalno šestko'''
+def mozni_zacetki_zmagovalnih_sestic(i, j):
+    '''vrne vsa polja, s katerimi bi se lahko začela ena od zmagovalnih 
+    šestic ob predpostavki, da smo ravnokar pobarvali (i,j)-to polje '''
+    
     if i % 2 == 0: # lihe (štejemo od 0)
-        kandidati = []
+        kandidati = {'vodoravna_crta': [(i, j-5), (i, j-4), (i, j-3), (i, j-2), (i, j-1), (i, j)],
+                     'padajoca_crta': [(i-5, j-3), (i-4, j-2), (i-3, j-2), (i-2, j-1), (i-1, j-1),(i, j)],
+                     'narascajoca_crta': [(i-5, j+2), (i-4, j+2), (i-3, j+1), (i-2, j+1), (i-1, j), (i, j)],
+                     'rozica': [(i-2, j-1), (i-2, j), (i-1, j-2), (i-1, j), (i, j-1), (i, j)],
+                     'trikotnik_na_glavo': [(i-2, j-1), (i-1, j-2), (i-1, j-1), (i, j-2), (i, j-1), (i, j)],
+                     'trikotnik': [(i-2, j-1), (i-2, j), (i-2, j+1), (i-1, j-1), (i-1, j), (i, j)]}
     else:   # sode
-        kandidati = [(i, j-5), (i, j-4), (i, j-3), (i, j-2), (i, j-1),
-                     (i, j+1), (i, j+2), (i, j+3), (i, j+4), (i,j+5),
-                     (i-5, j-2), (i-4, j-2), (i-3, j-1), (i-2, j-1), (i-1,j),
-                     (i+1, j+1), (i+2, j+1), (i+3, j+2), (i+4, j+2), (i+5, j+3),
-                     (i+5, j-2), (i+4, j-2), (i+3, j-1), (i+2, j-1), (i+1, j),
-                     (i-1, j+1), (i-2, j+1), (i-3, j+2), (i-4, j+2), (i-5, j+3),
-                     (i-2, j), (i-1, j-1), (i-1, j+2), (i+1, j-1), (i+1, j+2), (i+2, j)]
-    # vrstni red kandidatov: vodoravna črta levo, vodoravna črta desno,
-    # padajoca črta levo, padajoca črta desno, naraščajoča črat levo,
-    # naraščajoča črta desno, preostanek da zapolnimo še rožice in trikotnike
-    return [(i,j) for (i,j) in kandidati if veljavno_polje(i,j)]
+        kandidati = {'vodoravna_crta': [(i, j-5), (i, j-4), (i, j-3), (i, j-2), (i, j-1), (i, j)],
+                     'padajoca_crta': [(i-5, j-2), (i-4, j-2), (i-3, j-1), (i-2, j-1), (i-1, j), (i, j)],
+                     'narascajoca_crta': [(i-5, j+3), (i-4, j+2),(i-3, j+2), (i-2, j+1), (i-1, j+1), (i, j)],
+                     'rozica': [(i-2, j-1), (i-2, j), (i-1, j-1), (i-1, j+1), (i, j-1), (i, j)],
+                     'trikotnik_na_glavo': [(i-2, j-1), (i-1, j-1), (i-1, j), (i, j-2), (i, j-1), (i, j)],
+                     'trikotnik': [(i-2, j-1), (i-2, j), (i-2, j+1), (i-1, j), (i-1, j+1), (i, j)]}
+    veljavni_kandidati = {}
+    for vzorec in kandidati:
+        veljavni_kandidati[str(vzorec)]=[]
+        for (x,y) in kandidati[vzorec]:
+            if veljavno_polje(x, y):
+                veljavni_kandidati[str(vzorec)].append((x, y))
+    return veljavni_kandidati
     
 def nasprotnik(igralec):
     """Vrne nasprotnika od igralca."""

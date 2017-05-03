@@ -60,9 +60,10 @@ class Alfabeta():
 
         for i in range(logika_igre.velikost_matrike):
             for j in range(logika_igre.velikost_matrike):
-                for vzorec in self.igra.zmagovalni_vzorci(i, j):
-                    x1 = self.stevilo_polj_v_vzorcu(vzorec, self.igra.na_potezi)
-                    x2 = self.stevilo_polj_v_vzorcu(vzorec, logika_igre.nasprotnik(self.igra.na_potezi))
+                zmagovalni_vzorci = self.igra.zmagovalni_vzorci(i, j) 
+                for vzorec in zmagovalni_vzorci :
+                    x1 = self.stevilo_polj_v_vzorcu(zmagovalni_vzorci[vzorec], self.igra.na_potezi)
+                    x2 = self.stevilo_polj_v_vzorcu(zmagovalni_vzorci[vzorec], logika_igre.nasprotnik(self.igra.na_potezi))
                     vr_pozicije += vrednosti[(x1,x2)]
                     #if x1+x2 > 4: print('(x1,x2):', (x1,x2),'vr pozicije, (x1,x2)',vr_pozicije, (x1,x2))
         return vr_pozicije
