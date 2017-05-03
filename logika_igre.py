@@ -209,13 +209,30 @@ def veljavna_sestka(lst):
     return True
 
 def seznam_sosedov(i, j):
-        '''vrne seznam koordinat veljavnih sosedov'''
-        if i % 2 == 0: # lihe (steti zacnemo z 0)
-            kandidati = [(i-1, j-1), (i, j-1), (i+1, j-1), (i+1, j), (i, j+1), (i-1, j)]
-        else: # sode
-            kandidati = [(i-1, j), (i, j-1), (i+1, j), (i+1, j+1), (i, j+1), (i-1, j+1)]
-        return [(i,j) for (i,j) in kandidati if veljavno_polje(i,j)]
-
+    '''vrne seznam koordinat veljavnih sosedov'''
+    if i % 2 == 0: # lihe (steti zacnemo z 0)
+        kandidati = [(i-1, j-1), (i, j-1), (i+1, j-1), (i+1, j), (i, j+1), (i-1, j)]
+    else: # sode
+        kandidati = [(i-1, j), (i, j-1), (i+1, j), (i+1, j+1), (i, j+1), (i-1, j+1)]
+    return [(i,j) for (i,j) in kandidati if veljavno_polje(i,j)]
+        
+def mozna_zmagovalna_polja(i, j):
+    '''vrne vsa polja, s pomočjo katerih bi (i,j) lahko tvoril zmagovalno šestko'''
+    if i % 2 == 0: # lihe (štejemo od 0)
+        kandidati = []
+    else:   # sode
+        kandidati = [(i, j-5), (i, j-4), (i, j-3), (i, j-2), (i, j-1),
+                     (i, j+1), (i, j+2), (i, j+3), (i, j+4), (i,j+5),
+                     (i-5, j-2), (i-4, j-2), (i-3, j-1), (i-2, j-1), (i-1,j),
+                     (i+1, j+1), (i+2, j+1), (i+3, j+2), (i+4, j+2), (i+5, j+3),
+                     (i+5, j-2), (i+4, j-2), (i+3, j-1), (i+2, j-1), (i+1, j),
+                     (i-1, j+1), (i-2, j+1), (i-3, j+2), (i-4, j+2), (i-5, j+3),
+                     (i-2, j), (i-1, j-1), (i-1, j+2), (i+1, j-1), (i+1, j+2), (i+2, j)]
+    # vrstni red kandidatov: vodoravna črta levo, vodoravna črta desno,
+    # padajoca črta levo, padajoca črta desno, naraščajoča črat levo,
+    # naraščajoča črta desno, preostanek da zapolnimo še rožice in trikotnike
+    return [(i,j) for (i,j) in kandidati if veljavno_polje(i,j)]
+    
 def nasprotnik(igralec):
     """Vrne nasprotnika od igralca."""
     if igralec == prvi:
