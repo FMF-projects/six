@@ -272,6 +272,8 @@ class Gui():
         sredina = self.koord_id[(i,j)]
         self.plosca.itemconfig(sredina, fill=barva)
         self.igra.zabelezi_spremembo_barve(i, j, barva)
+        self.igra.zadnja_poteza = (i, j)
+        self.igra.stevilo_pobarvanih_polj += 1
 
     def izpis_igralca(self, igralec):
         '''pravilno sklanja ime igralca, za izpis uporabniku'''
