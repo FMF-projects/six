@@ -27,6 +27,8 @@ NEODLOCENO = logika_igre.NEODLOCENO
 # ter izbire v menuju barva_menu
 kombinacije_barv = [('red', 'blue'), ('red', 'green'), ('blue', 'green')]
 
+END = 'end'
+
 ###########################################################################
 #               GUI                                                       #
 ###########################################################################
@@ -93,7 +95,6 @@ class Gui():
 
         # IZBIRE V PODMENUJIH        
         igra_menu.add_command(label="Nova igra", command=lambda: self.zacni_igro())
-        igra_menu.add_command(label="Pravila in navodila", command=lambda: self.odpri_navodila())
 
         nacini_menu.add_radiobutton(label="Človek - Človek", variable=self.nacin_igre, value=0, command=lambda: self.zacni_igro())
         nacini_menu.add_radiobutton(label="Človek - Računalnik", variable=self.nacin_igre, value=1, command=lambda: self.zacni_igro())
@@ -108,6 +109,7 @@ class Gui():
         barva_menu.add_radiobutton(label="rdeča-zelena", variable=self.barva, value=1, command=lambda: self.zacni_igro())
         barva_menu.add_radiobutton(label="modra-zelena", variable=self.barva, value=2, command=lambda: self.zacni_igro())
        
+        pomoc_menu.add_command(label="Pravila in navodila", command=lambda: self.odpri_navodila())
         pomoc_menu.add_command(label="Uporaba konzole", command=lambda: self.odpri_pomoc())
 
     ##################################
@@ -242,12 +244,12 @@ class Gui():
         '''nariše igralno polje sestavljeno iz šestkotnikov'''
         a = STRANICA_SESTKOTNIKA
         v = VISINA_TRIKOTNIKA
-        velikost = logika_igre.velikost_matrike
-        for i in range(velikost): # vrstica
+        velikost_matrike = logika_igre.velikost_matrike
+        for i in range(velikost_matrike): # vrstica
             # preverimo sodost/lihost in tako določimo zamik prvega šestkotnika
             if i % 2 == 0: # lihe vrstice (ker začnemo šteti z 0)
                 zacetni_x = 2
-                for j in range(velikost): # stolpec
+                for j in range(velikost_matrike): # stolpec
                     x = zacetni_x + j * 2 * v
                     y = i * 1.5 * a + 2
                     id = self.narisi_sestkotnik(x, y)
@@ -255,7 +257,7 @@ class Gui():
                     self.koord_id[(i,j)] = id
             else: # sode vrstice
                 zacetni_x = v + 2
-                for j in range(velikost): # stolpec
+                for j in range(velikost_matrike): # stolpec
                     x = zacetni_x + j * 2 * v
                     y = i * 1.5 * a + 2
                     id = self.narisi_sestkotnik(x, y)
@@ -305,26 +307,29 @@ class Gui():
         
     ###########################################
     #          POMOČ UPORABNIKU               #
-    ###########################################
+    ###########################################   
 
     def odpri_navodila(self):
         '''odpre okno z navodili za igro'''
-        pomoc_igra = tkinter.Tk()
+        pomoc_igra = tkinter.Toplevel()
         pomoc_igra.title("Pravila in navodila")
         pomoc_igra.resizable(width=False, height=False)
 
-        navodila = tkinter.Text(pomoc_igra)
-        navodila.grid(row=0, column=0)
-        navodila.insert(0.1, 'Pozdravljeni! \n \n')
-        navodila.insert(3.1, 'V igri SIX morate za zmago tvoriti enega od naslednjih vzorcev:')
-        
+        navodila = tkinter.Text(pomoc_igra, width=65, height=3)
+        navodila.grid(row=0, column=0, columnspan=3)
+        navodila.insert(END, 'Pozdravljeni! \n \n')
+        navodila.insert(END, 'V igri SIX morate za zmago tvoriti enega od naslednjih vzorcev:')
         navodila.config(state='disabled')
-
         
+        vzorci = tkinter.PhotoImage(file=os.path.join('navodila','vzorci.gif'))
+        slika1 = tkinter.Label(pomoc_igra, image = vzorci)
+        slika1.image = vzorci
+        slika1.grid(row=1, column=0)
+   
 
     def odpri_pomoc(self):
         '''odpre okno z informacijami o konzoli'''
-        pomoc_konzola = tkinter.Tk()
+        pomoc_konzola = tkinter.Toplevel()
         pomoc_konzola.title("Pomoč")
         pomoc_konzola.resizable(width=False, height=False)
             
