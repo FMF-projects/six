@@ -109,9 +109,8 @@ class Gui():
         barva_menu.add_radiobutton(label="rdeča-zelena", variable=self.barva, value=1, command=lambda: self.zacni_igro())
         barva_menu.add_radiobutton(label="modra-zelena", variable=self.barva, value=2, command=lambda: self.zacni_igro())
        
-        pomoc_menu.add_command(label="Pravila in navodila", command=lambda: self.odpri_navodila())
-        pomoc_menu.add_command(label="Uporaba konzole", command=lambda: self.odpri_pomoc())
-
+        pomoc_menu.add_command(label="Navodila", command=lambda: self.odpri_navodila())
+    
     ##################################
     #             IGRA               #
     ##################################
@@ -314,25 +313,27 @@ class Gui():
         pomoc_igra = tkinter.Toplevel()
         pomoc_igra.title("Pravila in navodila")
         pomoc_igra.resizable(width=False, height=False)
-
-        navodila = tkinter.Text(pomoc_igra, width=65, height=3)
-        navodila.grid(row=0, column=0, columnspan=3)
-        navodila.insert(END, 'Pozdravljeni! \n \n')
-        navodila.insert(END, 'V igri SIX morate za zmago tvoriti enega od naslednjih vzorcev:')
-        navodila.config(state='disabled')
+        
+        navodila1 = tkinter.Text(pomoc_igra, width=65, height=3)
+        navodila1.grid(row=0, column=0)
+        navodila1.insert(END, 'Pozdravljeni! \n \n')
+        navodila1.insert(END, 'V igri SIX morate za zmago tvoriti enega od naslednjih vzorcev:')
+        navodila1.config(state='disabled')
         
         vzorci = tkinter.PhotoImage(file=os.path.join('navodila','vzorci.gif'))
         slika1 = tkinter.Label(pomoc_igra, image = vzorci)
         slika1.image = vzorci
         slika1.grid(row=1, column=0)
-   
 
-    def odpri_pomoc(self):
-        '''odpre okno z informacijami o konzoli'''
-        pomoc_konzola = tkinter.Toplevel()
-        pomoc_konzola.title("Pomoč")
-        pomoc_konzola.resizable(width=False, height=False)
-            
+        navodila2 = tkinter.Text(pomoc_igra, width=65, height=6)
+        navodila2.grid(row=2, column=0)
+        navodila2.insert(END, '')
+        navodila2.insert(END, 'Polje, ki ga želite izbrati, mora imeti vsaj enega že pobarvanega'
+                              'soseda, sicer poteza ni veljavna. \n')
+        navodila2.insert(END, 'Nad igralnim poljem se nahaja vrstica stanja, kjer vidite \n' 'trenutno stanje igre. \n')
+        navodila2.insert(END, 'V primeru zmage se v vrstici stanja izpiše zmagovalec, \n' 'zmagovalni vzorec pa se poudari.')
+        navodila2.config(state='disabled')
+           
             
 
 
