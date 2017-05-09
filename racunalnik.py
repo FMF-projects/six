@@ -20,7 +20,6 @@ class Racunalnik():
             target=lambda: self.algoritem.izracunaj_potezo(self.gui.igra.kopija()))
 
         # Poženemo vlakno:
-        logging.debug ("racunalnik: mislec.start()")
         self.mislec.start()
 
         # Gremo preverjat, ali je bila najdena poteza:
@@ -29,12 +28,9 @@ class Racunalnik():
     def preveri_potezo(self):
         """Vsakih 100ms preveri, ali je algoritem že izračunal potezo."""
         poteza = self.algoritem.poteza
-        if  poteza != None:
-          
-            # Algoritem je našel potezo, povleci jo, če ni bilo prekinitve
-            
-            # self.algoritem.poteza vrne par (i, j)
-            # funkcija povleci_potezo pa sprejme i, j
+        if  poteza != None:         
+            # self.algoritem.poteza vrne par (i, j) funkcija povleci_potezo 
+            # pa sprejme i, j, zato uporabimo *poteza
             self.gui.povleci_potezo(*poteza)
             
             # Vzporedno vlakno ni več aktivno, zato ga "pozabimo"
@@ -45,9 +41,9 @@ class Racunalnik():
             self.gui.plosca.after(100, self.preveri_potezo)
 
     def prekini(self):
+        '''prekine razmišljanje računalnika'''
         # To metodo kliče GUI, če je treba prekiniti razmišljanje.
         if self.mislec:
-            logging.debug ("Prekinjamo {0}".format(self.mislec))
             # Algoritmu sporočimo, da mora nehati z razmišljanjem
             self.algoritem.prekini()
             # Počakamo, da se vlakno ustavi
@@ -55,5 +51,6 @@ class Racunalnik():
             self.mislec = None
 
     def klik(self, i, j):
-        # Računalnik ignorira klike
+        '''se odzove na klik uporabnika, ko je na potezi računalnik'''
+        # Računalnik ignorira klike uporabnika
         pass

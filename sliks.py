@@ -16,7 +16,6 @@ STRANICA_SESTKOTNIKA = 20
 # visina trikotnikov v sestkotniku
 VISINA_TRIKOTNIKA = 3 ** (0.5) * (0.5) * STRANICA_SESTKOTNIKA
 
-
 PRAZNO = logika_igre.PRAZNO
 
 NI_KONEC = logika_igre.NI_KONEC
@@ -27,10 +26,12 @@ NEODLOCENO = logika_igre.NEODLOCENO
 # ter izbire v menuju barva_menu
 kombinacije_barv = [('red', 'blue'), ('red', 'green'), ('blue', 'green')]
 
+
+# uporabljeno v Textwidgetu
 END = 'end'
 
 ###########################################################################
-#               GUI                                                       #
+#                               GUI                                       #
 ###########################################################################
 
 class Gui():
@@ -41,6 +42,7 @@ class Gui():
         self.plosca = tkinter.Canvas(master)
         self.plosca.grid(row=1, column=0)
 
+        # 'naročimo' se na levi klik miške
         self.plosca.bind("<Button-1>", self.plosca_klik)
 
         # POLJE ZA SPOROCILA
@@ -50,7 +52,7 @@ class Gui():
         # SHRANJEVANJE PODATKOV O POLJIH
         # Ključi so id, vrednosti koordinate.
         self.id_koord = {}
-        # Obratno.
+        # Ključi so koordinate (i, j), vrednosti id-ji
         self.koord_id = {}
         
         # ZAČNEMO NOVO IGRO
@@ -63,8 +65,8 @@ class Gui():
         self.barva = tkinter.IntVar(value=0)
         # na polju velikosti 15x15
         self.velikost_matrike = tkinter.IntVar(value=15)
-        # v nacinu clovek-clovek (izbira 0)
-        self.nacin_igre = tkinter.IntVar(value=0)
+        # v nacinu clovek-racunalnik (izbira 1)
+        self.nacin_igre = tkinter.IntVar(value=1)
         # zacnemo igro
         self.zacni_igro()
         
@@ -142,7 +144,6 @@ class Gui():
 
     def prekini_igralce(self):
         """Sporoči igralcem, da morajo nehati razmišljati."""
-        logging.debug ("prekinjam igralce")
         if self.igralec_1: self.igralec_1.prekini()
         if self.igralec_2: self.igralec_2.prekini()
 
@@ -228,6 +229,7 @@ class Gui():
             pass
 
     def narisi_sestkotnik(self, x, y):
+        '''nariše šestkotnik in vrne njegov id'''
         a = STRANICA_SESTKOTNIKA
         v = VISINA_TRIKOTNIKA
         t = [x, y + a * 0.5,
@@ -291,6 +293,7 @@ class Gui():
         if zmagovalec in [logika_igre.prvi, logika_igre.drugi]:
             self.napis.set('Zmagal je {0}.'.format(self.izpis_igralca(zmagovalec)))
             for (i, j) in zmagovalna_polja:
+                # odebelimo zmagovalna polja
                 id = self.koord_id[(i, j)]
                 self.plosca.itemconfig(id, width=3)
 

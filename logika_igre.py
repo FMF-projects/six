@@ -28,10 +28,13 @@ class Igra():
         # SEZNAM ŠESTKOTNIKOV
         self.igralno_polje = [[PRAZNO for j in range(velikost_matrike)] for i in range(velikost_matrike)]
 
+        # prvo polje pobarvamo z barvo prvega igralca, zato je na potezi drugi
         self.na_potezi = drugi
 
         self.zgodovina = []
         
+        # prvo spremembo zadnje poteze in števila pobarvanih polj naredi gui, 
+        # ko pobarva sredinsko polje, glede na velikost igralnega polja
         self.zadnja_poteza = None
         self.stevilo_pobarvanih_polj = 0
         
@@ -41,7 +44,7 @@ class Igra():
     ##############
     
     def veljavnost_poteze(self, i, j):
-        '''vrne True, če je poteza veljavna'''
+        '''vrne True, če je poteza (i, j) veljavna'''
         if self.na_potezi == None:
             assert False, "gledamo veljavnost poteze, ko nihče ni na potezi"
 
@@ -109,7 +112,7 @@ class Igra():
             return []
             
     def trikotnik_na_glavo(self, i, j):
-        '''vrne vzorec za trikotnik na glavo, ce je le-ta veljavna sestka'''
+        '''vrne vzorec za trikotnik obrnjen na glavo, ce je le-ta veljavna sestka'''
         if i % 2 == 0: # lihe vrstice
             trikotnik_na_glavo = [(i, j), (i, j+1), (i, j+2), (i+1, j), (i+1, j+1), (i+2, j+1)]
         else:   # sode
@@ -146,7 +149,6 @@ class Igra():
  
     def zmagovalni_vzorci(self, i, j):
         '''vrne slovar vseh moznih zmagovalnih vzorcev za polje (i,j)'''       
-            
         vodoravna_crta = self.vodoravna_crta(i, j)
         narascajoca_crta = self.narascajoca_crta(i, j)
         padajoca_crta = self.padajoca_crta(i, j)
@@ -177,11 +179,11 @@ class Igra():
             # shranimo igralno polje preden izvedemo potezo
             # v primeru shranjevanja novih podatkov, je potrebno popraviti 
             # še funkciji razveljavi in kopija
-            kopija = [self.igralno_polje[i][:] for i in range(velikost_matrike)]
+            kopija_polja = [self.igralno_polje[i][:] for i in range(velikost_matrike)]
             barva = self.na_potezi
             poteza = self.zadnja_poteza
             stevilo_polj = self.stevilo_pobarvanih_polj
-            self.zgodovina.append((kopija, barva, poteza, stevilo_polj))
+            self.zgodovina.append((kopija_polja, barva, poteza, stevilo_polj))
 
             # zabelezimo spremembo barve
             self.zabelezi_spremembo_barve(i, j, barva)
@@ -276,6 +278,7 @@ class Igra():
     ########
 
     def razveljavi(self):
+        '''razveljavi zadnjo potezo'''
         self.igralno_polje, self.na_potezi, self.zadnja_poteza, self.stevilo_pobarvanih_polj = self.zgodovina.pop()
 
     def kopija(self):

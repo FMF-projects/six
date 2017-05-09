@@ -16,5 +16,5 @@ class Clovek():
         pass
 
     def klik(self, i, j):
-        '''povlečemo potezo, če je ta veljavna'''
+        '''povlečemo potezo (i, j)'''
         self.gui.povleci_potezo(i, j)

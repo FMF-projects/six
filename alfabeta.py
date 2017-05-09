@@ -58,17 +58,17 @@ class Alfabeta():
             }
         vr_pozicije = 0
 
-        for i in range(logika_igre.velikost_matrike):
-            for j in range(logika_igre.velikost_matrike):
+        for i in range(logika_igre.velikost_matrike): # vrstica
+            for j in range(logika_igre.velikost_matrike): # stolpec
                 vzorci = self.igra.zmagovalni_vzorci(i, j) 
                 for vzorec in vzorci:
+                    # pogledamo število lastnih polj v vzorcu, nato pa še število polj nasprotnika
                     x1 = self.stevilo_polj_v_vzorcu(vzorci[vzorec], self.igra.na_potezi)
                     x2 = self.stevilo_polj_v_vzorcu(vzorci[vzorec], logika_igre.nasprotnik(self.igra.na_potezi))
                     vr_pozicije += vrednosti[(x1,x2)]
         return vr_pozicije
 
     def izracunaj_potezo(self, igra):
-        logging.debug ("alfabeta: racunamo potezo")
         self.igra = igra
         self.prekinitev = False # Glavno vlakno bo to nastavilo na True, če moramo nehati
         self.jaz = self.igra.na_potezi
@@ -77,7 +77,6 @@ class Alfabeta():
         (poteza, vrednost) = self.alfabeta(self.globina, True)
         self.jaz = None
         self.igra = None
-        logging.debug("alfabeta: poteza {0}, vrednost {1}, prekinitev {2}".format(poteza, vrednost, self.prekinitev))
         if self.prekinitev == False:
             # Potezo izvedemo v primeru, da nismo bili prekinjeni
             self.poteza = poteza
@@ -89,6 +88,7 @@ class Alfabeta():
             # Sporočili so nam, da moramo prekiniti
             return (None, 0)
        
+        # pogledamo kakšno je trenutno stanje igre
         (zmagovalec, zmagovalna_polja) = self.igra.stanje_igre()
 
         if zmagovalec in (logika_igre.prvi, logika_igre.drugi, NEODLOCENO):
@@ -107,7 +107,7 @@ class Alfabeta():
             if globina == 0:
                 return (None, self.vrednost_pozicije())
             
-            # naredimo eno stopnjo alfabeta
+            # nismo na željeni globini, naredimo še eno stopnjo alfabeta
             if maksimiziramo:
                 najboljse_poteze = []
                 vrednost = -NESKONCNO
