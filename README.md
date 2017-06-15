@@ -8,7 +8,7 @@ Projekt se izvaja v okviru predmeta Programiranje 2 na Fakulteti za matematiko i
 
 Najprej poženemo datoteko sliks.py.
 
-(Uporabnikom, ki na svojem računalniku nimajo nameščenega programa python priporočam, da si z repozitorija prenesejo Six.rar, datoteko razpakirajo in poženejo sliks.exe)
+(Uporabnikom z operacijskim sistemom windows (64-bit), ki na svojem računalniku nimajo nameščenega programa python priporočam, da si z repozitorija prenesejo Six.rar, datoteko razpakirajo in poženejo sliks.exe)
 
 Odpre se igralno polje z orodno vrstico s pomočjo katere prilagajamo igro.
 
